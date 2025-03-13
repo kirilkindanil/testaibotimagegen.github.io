@@ -1,464 +1,758 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRADNI Demo</title>
-    <style>
-        /* Переменные цветов для разных тем */
-        :root {
-            --gold-primary: #D4AF37;
-            --gold-secondary: #A67C00;
-            --gold-bg: #000000;
-            --gold-card: #111111;
-            
-            --pink-primary: #FF1493;
-            --pink-secondary: #FF69B4;
-            --pink-bg: #FFF0F5;
-            --pink-card: #FFDBF0;
-            
-            --blue-primary: #2E86C1;
-            --blue-secondary: #5DADE2;
-            --blue-bg: #F8F9F9;
-            --blue-card: #FFFFFF;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-            transition: background 0.5s ease, color 0.5s ease;
-        }
-        
-        .header {
-            text-align: center;
-            padding: 20px 0;
-            margin-bottom: 20px;
-            transition: all 0.5s ease;
-        }
-        
-        .profile-card {
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            transition: all 0.5s ease;
-        }
-        
-        .photo-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 100%; /* соотношение сторон 1:1 */
-        }
-        
-        .profile-photo {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .profile-info {
-            padding: 20px;
-            transition: all 0.5s ease;
-        }
-        
-        .profile-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            transition: all 0.5s ease;
-        }
-        
-        .profile-age {
-            font-size: 16px;
-            margin-bottom: 15px;
-            transition: all 0.5s ease;
-        }
-        
-        .reactions {
-            display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            transition: all 0.5s ease;
-            border-radius: 10px;
-        }
-        
-        .reaction {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 5px 10px;
-            transition: transform 0.2s ease;
-        }
-        
-        .reaction:active {
-            transform: scale(0.95);
-        }
-        
-        .reaction-emoji {
-            font-size: 24px;
-            margin-right: 10px;
-        }
-        
-        .reaction-count {
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 15px;
-            transition: all 0.5s ease;
-        }
-        
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
-        }
-        
-        .nav-button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .theme-indicator {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        .theme-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin: 0 5px;
-            opacity: 0.3;
-            transition: all 0.3s ease;
-        }
-        
-        .theme-dot.active {
-            opacity: 1;
-        }
-        
-        /* Стили для золотой темы */
-        .theme-gold {
-            background-color: var(--gold-bg);
-            color: var(--gold-primary);
-        }
-        
-        .theme-gold .header {
-            border-bottom: 2px solid var(--gold-primary);
-        }
-        
-        .theme-gold .profile-card {
-            background-color: var(--gold-card);
-            border: 2px solid var(--gold-primary);
-        }
-        
-        .theme-gold .profile-name {
-            color: var(--gold-primary);
-        }
-        
-        .theme-gold .profile-age {
-            color: var(--gold-secondary);
-        }
-        
-        .theme-gold .reactions {
-            background-color: var(--gold-card);
-            border: 1px solid var(--gold-primary);
-        }
-        
-        .theme-gold .reaction-count {
-            background-color: var(--gold-card);
-            border: 1px solid var(--gold-primary);
-            color: var(--gold-primary);
-        }
-        
-        .theme-gold .nav-button {
-            background-color: var(--gold-card);
-            color: var(--gold-primary);
-            border: 1px solid var(--gold-primary);
-        }
-        
-        .theme-gold .theme-dot {
-            background-color: var(--gold-primary);
-        }
-        
-        /* Стили для розовой темы */
-        .theme-pink {
-            background: linear-gradient(to bottom, var(--pink-secondary), var(--pink-bg));
-            color: var(--pink-primary);
-        }
-        
-        .theme-pink .header {
-            background-color: var(--pink-card);
-            border-bottom: 2px solid var(--pink-primary);
-        }
-        
-        .theme-pink .profile-card {
-            background-color: var(--pink-card);
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
-        }
-        
-        .theme-pink .profile-name {
-            color: var(--pink-primary);
-        }
-        
-        .theme-pink .profile-age {
-            color: var(--pink-secondary);
-        }
-        
-        .theme-pink .reactions {
-            background-color: var(--pink-card);
-            border-radius: 20px;
-        }
-        
-        .theme-pink .reaction-count {
-            background-color: var(--pink-bg);
-            border: 1px solid var(--pink-secondary);
-            color: var(--pink-primary);
-        }
-        
-        .theme-pink .nav-button {
-            background-color: var(--pink-primary);
-            color: white;
-        }
-        
-        .theme-pink .theme-dot {
-            background-color: var(--pink-primary);
-        }
-        
-        /* Стили для голубой темы */
-        .theme-blue {
-            background-color: var(--blue-bg);
-            color: var(--blue-primary);
-        }
-        
-        .theme-blue .header {
-            background-color: var(--blue-primary);
-            color: white;
-        }
-        
-        .theme-blue .profile-card {
-            background-color: var(--blue-card);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .theme-blue .profile-name {
-            color: var(--blue-primary);
-        }
-        
-        .theme-blue .profile-age {
-            color: var(--blue-secondary);
-        }
-        
-        .theme-blue .reactions {
-            background-color: #F2F6F9;
-        }
-        
-        .theme-blue .reaction-count {
-            background-color: var(--blue-bg);
-            border: 1px solid var(--blue-secondary);
-            color: var(--blue-primary);
-        }
-        
-        .theme-blue .nav-button {
-            background-color: var(--blue-primary);
-            color: white;
-        }
-        
-        .theme-blue .theme-dot {
-            background-color: var(--blue-primary);
-        }
-        
-        /* Анимация смены темы */
-        .theme-transition {
-            animation: theme-change 0.5s ease;
-        }
-        
-        @keyframes theme-change {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FOOD MENU</title>
+  
+  <!-- Подключение шрифта Sativa -->
+  <style>
+    @font-face {
+      font-family: 'Sativa';
+      src: url('fonts/Sativa-Regular.woff2') format('woff2'),
+           url('fonts/Sativa-Regular.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Sativa';
+      src: url('fonts/Sativa-Bold.woff2') format('woff2'),
+           url('fonts/Sativa-Bold.woff') format('woff');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Sativa';
+      src: url('fonts/Sativa-Light.woff2') format('woff2'),
+           url('fonts/Sativa-Light.woff') format('woff');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Sativa';
+      src: url('fonts/Sativa-Medium.woff2') format('woff2'),
+           url('fonts/Sativa-Medium.woff') format('woff');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Sativa', sans-serif;
+    }
+    
+    body {
+      background-color: #121212;
+      background-image: url('back.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+    }
+    
+    .overlay {
+      background-color: rgba(18, 18, 18, 0.85);
+      min-height: 100vh;
+      width: 100%;
+    }
+    
+    header {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+    }
+    
+    .logo img {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .main-title {
+      font-family: 'Sativa', sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .category-btn {
+      background-color: #1a1a1a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Sativa', sans-serif;
+      font-weight: 500;
+    }
+    
+    .category-btn:hover {
+      background-color: #333;
+    }
+    
+    .category-btn.active {
+      background-color: #9AFF2B;
+      color: black;
+    }
+    
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+      gap: 30px;
+    }
+    
+    .menu-item {
+      background-color: rgba(26, 26, 26, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .menu-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .menu-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .item-image {
+      width: 80%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .item-title-container {
+      margin-bottom: 15px;
+    }
+    
+    .item-title {
+      background-color: #9AFF2B;
+      color: black;
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 8px 30px;
+      border-radius: 4px;
+      display: inline-block;
+      font-family: 'Sativa', sans-serif;
+      font-weight: bold;
+    }
+    
+    .delivery-info {
+      font-size: 14px;
+      color: #aaa;
+      margin: 15px 0;
+      font-family: 'Sativa', sans-serif;
+      font-weight: 300;
+    }
+    
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .price-option {
+      font-size: 16px;
+      font-weight: 600;
+      padding: 8px;
+      text-align: center;
+      border-radius: 4px;
+      background-color: #2a2a2a;
+      font-family: 'Sativa', sans-serif;
+      font-weight: 500;
+    }
+    
+    .description {
+      font-size: 14px;
+      color: #aaa;
+      text-align: center;
+      line-height: 1.4;
+      font-family: 'Sativa', sans-serif;
+      font-weight: normal;
+    }
+    
+    .order-btn {
+      margin-top: 20px;
+      background-color: #9AFF2B;
+      color: black;
+      border: none;
+      padding: 10px 30px;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      font-family: 'Sativa', sans-serif;
+      font-weight: bold;
+    }
+    
+    .order-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .location-section {
+      background-color: rgba(26, 26, 26, 0.7);
+      padding: 60px 0;
+      margin-top: 60px;
+    }
+    
+    .section-title {
+      font-size: 32px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+      text-align: center;
+      font-family: 'Sativa', sans-serif;
+      font-weight: bold;
+    }
+    
+    .map-container {
+      height: 400px;
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 30px;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 40px;
+    }
+    
+    .info-card {
+      background-color: rgba(42, 42, 42, 0.8);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .info-icon {
+      font-size: 36px;
+      margin-bottom: 15px;
+      color: #9AFF2B;
+    }
+    
+    .info-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      font-family: 'Sativa', sans-serif;
+      font-weight: bold;
+    }
+    
+    .info-text {
+      color: #aaa;
+      line-height: 1.4;
+      font-family: 'Sativa', sans-serif;
+      font-weight: normal;
+    }
+    
+    footer {
+      background-color: rgba(26, 26, 26, 0.7);
+      padding: 40px 0;
+      text-align: center;
+      margin-top: 60px;
+    }
+    
+    .footer-logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+    }
+    
+    .footer-logo img {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .copyright {
+      color: #666;
+      margin-top: 20px;
+      font-size: 14px;
+      font-family: 'Sativa', sans-serif;
+      font-weight: 300;
+    }
+    
+    /* Modal window */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background-color: #1a1a1a;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #9AFF2B;
+      font-family: 'Sativa', sans-serif;
+      font-weight: bold;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-family: 'Sativa', sans-serif;
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background-color: #2a2a2a;
+      color: white;
+      font-family: 'Sativa', sans-serif;
+      font-weight: normal;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #9AFF2B;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background-color: #2a2a2a;
+      color: white;
+      font-family: 'Sativa', sans-serif;
+      font-weight: normal;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    
+    .modal-close {
+      background-color: transparent;
+      border: 1px solid #666;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Sativa', sans-serif;
+      font-weight: 500;
+    }
+    
+    .modal-submit {
+      background-color: #9AFF2B;
+      color: black;
+      border: none;
+      padding: 10px 30px;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Sativa', sans-serif;
+      font-weight: bold;
+    }
+    
+    /* Mobile version */
+    @media (max-width: 768px) {
+      .main-title {
+        font-size: 32px;
+      }
+      
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .price-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
-<body class="theme-blue">
-    <div class="header">
-        <h1>GRADNI</h1>
+<body>
+  <div class="overlay">
+    <header>
+      <div class="logo">
+        <img src="logo.png" alt="Logo">
+      </div>
+      <h1 class="main-title">FOOD MENU</h1>
+    </header>
+    
+    <div class="container">
+      <div class="categories">
+        <button class="category-btn active" data-category="all">All</button>
+        <button class="category-btn" data-category="burgers">Burgers</button>
+        <button class="category-btn" data-category="coffee">Coffee</button>
+        <button class="category-btn" data-category="pasta">Pasta</button>
+        <button class="category-btn" data-category="soup">Soups</button>
+        <button class="category-btn" data-category="pizza">Pizza</button>
+        <button class="category-btn" data-category="dessert">Desserts</button>
+      </div>
+      
+      <div class="menu-grid">
+        <!-- Burger -->
+        <div class="menu-item" data-category="burgers">
+          <div class="menu-content">
+            <img src="images/burger.jpg" alt="Classic Burger" class="item-image">
+            <div class="item-title-container">
+              <div class="item-title">CLASSIC BURGER</div>
+            </div>
+            <div class="delivery-info">Pickup: 400₽</div>
+            <div class="price-grid">
+              <div class="price-option">300₽</div>
+              <div class="price-option">450₽</div>
+              <div class="price-option">600₽</div>
+              <div class="price-option">750₽</div>
+            </div>
+            <div class="description">
+              Juicy beef patty, signature sauce, fresh vegetables and a crispy bun. The perfect combination of ingredients for true burger connoisseurs.
+            </div>
+            <button class="order-btn">Order</button>
+          </div>
+        </div>
+        
+        <!-- Coffee -->
+        <div class="menu-item" data-category="coffee">
+          <div class="menu-content">
+            <img src="images/coffee.jpg" alt="Premium Coffee" class="item-image">
+            <div class="item-title-container">
+              <div class="item-title">PREMIUM COFFEE</div>
+            </div>
+            <div class="delivery-info">Pickup: 300₽</div>
+            <div class="price-grid">
+              <div class="price-option">180₽</div>
+              <div class="price-option">250₽</div>
+              <div class="price-option">320₽</div>
+              <div class="price-option">400₽</div>
+            </div>
+            <div class="description">
+              Premium arabica, intense flavor, velvety texture and exquisite aftertaste. The perfect choice for true coffee gourmets.
+            </div>
+            <button class="order-btn">Order</button>
+          </div>
+        </div>
+        
+        <!-- Pasta -->
+        <div class="menu-item" data-category="pasta">
+          <div class="menu-content">
+            <img src="images/pasta.jpg" alt="Italian Pasta" class="item-image">
+            <div class="item-title-container">
+              <div class="item-title">ITALIAN PASTA</div>
+            </div>
+            <div class="delivery-info">Pickup: 500₽</div>
+            <div class="price-grid">
+              <div class="price-option">350₽</div>
+              <div class="price-option">480₽</div>
+              <div class="price-option">650₽</div>
+              <div class="price-option">800₽</div>
+            </div>
+            <div class="description">
+              Traditional pasta with aromatic sauce, fresh herbs and parmesan. The real taste of Italy in every portion of our signature pasta.
+            </div>
+            <button class="order-btn">Order</button>
+          </div>
+        </div>
+        
+        <!-- Soup -->
+        <div class="menu-item" data-category="soup">
+          <div class="menu-content">
+            <img src="images/soup.jpg" alt="Creamy Soup" class="item-image">
+            <div class="item-title-container">
+              <div class="item-title">CREAMY SOUP</div>
+            </div>
+            <div class="delivery-info">Pickup: 350₽</div>
+            <div class="price-grid">
+              <div class="price-option">250₽</div>
+              <div class="price-option">350₽</div>
+              <div class="price-option">450₽</div>
+              <div class="price-option">550₽</div>
+            </div>
+            <div class="description">
+              Creamy soup with tender pieces of chicken, fresh vegetables and crispy croutons. Warms and nourishes in any weather.
+            </div>
+            <button class="order-btn">Order</button>
+          </div>
+        </div>
+        
+        <!-- Pizza -->
+        <div class="menu-item" data-category="pizza">
+          <div class="menu-content">
+            <img src="images/pizza.jpg" alt="Supreme Pizza" class="item-image">
+            <div class="item-title-container">
+              <div class="item-title">SUPREME PIZZA</div>
+            </div>
+            <div class="delivery-info">Pickup: 600₽</div>
+            <div class="price-grid">
+              <div class="price-option">450₽</div>
+              <div class="price-option">650₽</div>
+              <div class="price-option">850₽</div>
+              <div class="price-option">1050₽</div>
+            </div>
+            <div class="description">
+              Thin crust, signature tomato sauce, four cheese mix and Italian herbs. The taste of real pizza in every slice.
+            </div>
+            <button class="order-btn">Order</button>
+          </div>
+        </div>
+        
+        <!-- Dessert -->
+        <div class="menu-item" data-category="dessert">
+          <div class="menu-content">
+            <img src="images/dessert.jpg" alt="Cheesecake" class="item-image">
+            <div class="item-title-container">
+              <div class="item-title">CHEESECAKE</div>
+            </div>
+            <div class="delivery-info">Pickup: 350₽</div>
+            <div class="price-grid">
+              <div class="price-option">220₽</div>
+              <div class="price-option">320₽</div>
+              <div class="price-option">420₽</div>
+              <div class="price-option">520₽</div>
+            </div>
+            <div class="description">
+              Delicate creamy cheesecake with a crispy base, fresh berries and vanilla sauce. The perfect ending to your lunch or dinner.
+            </div>
+            <button class="order-btn">Order</button>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <div id="profile-container">
-        <!-- Профиль будет загружен сюда через JavaScript -->
-    </div>
+    <section class="location-section">
+      <div class="container">
+        <h2 class="section-title">Find Us</h2>
+        
+        <div class="map-container">
+          <!-- Interactive map will be here -->
+          <img src="images/map.jpg" alt="Location map" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">📍</div>
+            <h3 class="info-title">Address</h3>
+            <p class="info-text">123 Example St.<br>Moscow, 123456</p>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-icon">🕒</div>
+            <h3 class="info-title">Opening Hours</h3>
+            <p class="info-text">Mon-Fri: 10:00 - 22:00<br>Sat-Sun: 11:00 - 23:00</p>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-icon">📞</div>
+            <h3 class="info-title">Contacts</h3>
+            <p class="info-text">Phone: +7 (123) 456-78-90<br>Email: info@foodmenu.com</p>
+          </div>
+        </div>
+      </div>
+    </section>
     
-    <div class="navigation">
-        <button class="nav-button" onclick="prevProfile()">← Предыдущий</button>
-        <button class="nav-button" onclick="nextProfile()">Следующий →</button>
-    </div>
+    <footer>
+      <div class="container">
+        <div class="footer-logo">
+          <img src="images/logo.png" alt="Logo">
+        </div>
+        
+        <div class="copyright">© 2025 FOOD MENU. All rights reserved.</div>
+      </div>
+    </footer>
     
-    <div class="theme-indicator">
-        <div class="theme-dot" data-theme="gold"></div>
-        <div class="theme-dot" data-theme="pink"></div>
-        <div class="theme-dot active" data-theme="blue"></div>
+    <!-- Modal window -->
+    <div class="modal" id="orderModal">
+      <div class="modal-content">
+        <h2 class="modal-title">Place an Order</h2>
+        
+        <form id="orderForm">
+          <div class="form-group">
+            <label class="form-label">Your name</label>
+            <input type="text" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Dish</label>
+            <select class="form-select" required>
+              <option value="">Select dish</option>
+              <option value="burger">Classic Burger</option>
+              <option value="coffee">Premium Coffee</option>
+              <option value="pasta">Italian Pasta</option>
+              <option value="soup">Creamy Soup</option>
+              <option value="pizza">Supreme Pizza</option>
+              <option value="cheesecake">Cheesecake</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Portion size</label>
+            <select class="form-select" required>
+              <option value="">Select size</option>
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+              <option value="xl">Extra Large</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Pickup time</label>
+            <input type="time" class="form-input" required>
+          </div>
+          
+          <div class="modal-buttons">
+            <button type="button" class="modal-close" id="closeModal">Cancel</button>
+            <button type="submit" class="modal-submit">Order</button>
+          </div>
+        </form>
+      </div>
     </div>
-    
-    <script>
-        // Упрощенный набор профилей для демо
-        const profiles = [
-            {
-                name: "Александр",
-                age: 26,
-                photo: "https://randomuser.me/api/portraits/men/1.jpg",
-                reactions: { "😍": 24, "🤮": 18 }
-            },
-            {
-                name: "Елена",
-                age: 23,
-                photo: "https://randomuser.me/api/portraits/women/2.jpg",
-                reactions: { "😍": 156, "🤮": 42 }
-            },
-            {
-                name: "Михаил",
-                age: 29,
-                photo: "https://randomuser.me/api/portraits/men/3.jpg",
-                reactions: { "😍": 34, "🤮": 128 }
-            },
-            {
-                name: "Анна",
-                age: 24,
-                photo: "https://randomuser.me/api/portraits/women/4.jpg",
-                reactions: { "😍": 87, "🤮": 46 }
-            },
-            {
-                name: "Дмитрий",
-                age: 31,
-                photo: "https://randomuser.me/api/portraits/men/5.jpg",
-                reactions: { "😍": 42, "🤮": 175 }
+  </div>
+  
+  <script>
+    // Modal window functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('orderModal');
+      const closeModal = document.getElementById('closeModal');
+      const orderForm = document.getElementById('orderForm');
+      const itemOrderBtns = document.querySelectorAll('.order-btn');
+      
+      // Open modal when clicking order button on dish
+      itemOrderBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const menuItem = e.target.closest('.menu-item');
+          const itemTitle = menuItem.querySelector('.item-title').textContent;
+          
+          // Pre-select the dish in the form
+          const foodSelect = document.querySelector('.form-select');
+          
+          // Find option containing the dish name text
+          for (let i = 0; i < foodSelect.options.length; i++) {
+            if (foodSelect.options[i].text.includes(itemTitle)) {
+              foodSelect.selectedIndex = i;
+              break;
             }
-        ];
-        
-        let currentProfileIndex = 0;
-        
-        // Функция для определения темы на основе реакций
-        function determineTheme(profile) {
-            const loveReactions = profile.reactions["😍"] || 0;
-            const disgustReactions = profile.reactions["🤮"] || 0;
-            
-            if (disgustReactions >= 100) {
-                return "gold";
-            } else if (loveReactions >= 100) {
-                return "pink";
-            } else {
-                return "blue";
-            }
-        }
-        
-        // Функция для применения темы
-        function applyTheme(theme) {
-            document.body.className = `theme-${theme} theme-transition`;
-            
-            // Обновляем индикатор темы
-            document.querySelectorAll('.theme-dot').forEach(dot => {
-                dot.classList.remove('active');
-                if (dot.dataset.theme === theme) {
-                    dot.classList.add('active');
-                }
-            });
-        }
-        
-        // Функция для отображения профиля
-        function renderProfile(profile) {
-            const container = document.getElementById('profile-container');
-            
-            container.innerHTML = `
-                <div class="profile-card">
-                    <div class="photo-container">
-                        <img src="${profile.photo}" alt="${profile.name}" class="profile-photo">
-                    </div>
-                    <div class="profile-info">
-                        <div class="profile-name">${profile.name}</div>
-                        <div class="profile-age">${profile.age} лет</div>
-                        
-                        <div class="reactions">
-                            <div class="reaction" onclick="addReaction('😍')">
-                                <span class="reaction-emoji">😍</span>
-                                <span class="reaction-count">${profile.reactions["😍"] || 0}</span>
-                            </div>
-                            <div class="reaction" onclick="addReaction('🤮')">
-                                <span class="reaction-emoji">🤮</span>
-                                <span class="reaction-count">${profile.reactions["🤮"] || 0}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Функция для отображения текущего профиля
-        function displayCurrentProfile() {
-            const profile = profiles[currentProfileIndex];
-            
-            // Применяем тему на основе реакций
-            const theme = determineTheme(profile);
-            applyTheme(theme);
-            
-            // Отображаем профиль
-            renderProfile(profile);
-        }
-        
-        // Функция для перехода к следующему профилю
-        function nextProfile() {
-            currentProfileIndex = (currentProfileIndex + 1) % profiles.length;
-            displayCurrentProfile();
-        }
-        
-        // Функция для перехода к предыдущему профилю
-        function prevProfile() {
-            currentProfileIndex = (currentProfileIndex - 1 + profiles.length) % profiles.length;
-            displayCurrentProfile();
-        }
-        
-        // Функция для добавления реакции
-        function addReaction(type) {
-            const profile = profiles[currentProfileIndex];
-            
-            // Увеличиваем счетчик реакций
-            profile.reactions[type] = (profile.reactions[type] || 0) + 1;
-            
-            // Обновляем отображение
-            const oldTheme = determineTheme(profile);
-            renderProfile(profile);
-            
-            // Проверяем, нужно ли сменить тему
-            const newTheme = determineTheme(profile);
-            if (oldTheme !== newTheme) {
-                applyTheme(newTheme);
-            }
-        }
-        
-        // Обработчики клавиш для навигации
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowLeft') {
-                prevProfile();
-            } else if (event.key === 'ArrowRight') {
-                nextProfile();
-            }
+          }
+          
+          modal.style.display = 'flex';
         });
-        
-        // Отображаем первый профиль при загрузке страницы
-        window.addEventListener('load', displayCurrentProfile);
-    </script>
+      });
+      
+      // Close modal when clicking close button
+      closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+      
+      // Close modal when clicking outside its content
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+      
+      // Form submission handling
+      orderForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Your order has been successfully placed! We will contact you for confirmation.');
+        modal.style.display = 'none';
+      });
+    });
+    
+    // Menu categories functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const categoryBtns = document.querySelectorAll('.category-btn');
+      const menuItems = document.querySelectorAll('.menu-item');
+      
+      categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove active class from all buttons
+          categoryBtns.forEach(b => b.classList.remove('active'));
+          
+          // Add active class to clicked button
+          btn.classList.add('active');
+          
+          const category = btn.dataset.category;
+          
+          // Show all or only selected category
+          menuItems.forEach(item => {
+            if (category === 'all' || item.dataset.category === category) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>

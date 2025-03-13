@@ -36,17 +36,20 @@
         }
         
         :root {
-            --primary-color: var(--tg-theme-button-color, #2481cc);
-            --primary-text-color: var(--tg-theme-button-text-color, #fff);
-            --background-color: var(--tg-theme-bg-color, #fff);
-            --card-bg-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            --text-color: var(--tg-theme-text-color, #000);
-            --hint-color: var(--tg-theme-hint-color, #999);
+            --primary-color: #000000;
+            --accent-color: #333333;
+            --primary-text-color: #ffffff;
+            --background-color: #121212;
+            --card-bg-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --hint-color: #888888;
+            --error-color: #ff5252;
+            --success-color: #4caf50;
             --border-radius: 12px;
             --transition-speed: 0.3s;
-            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.15);
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.5);
         }
 
         body {
@@ -93,10 +96,10 @@
             white-space: pre;
             line-height: 1.2;
             font-size: 6px;
-            color: var(--primary-color);
+            color: #ffffff;
             text-align: center;
             margin: 0 auto 15px;
-            text-shadow: 0 0 2px rgba(36, 129, 204, 0.3);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
             transform: scale(1.5);
             transform-origin: center;
             max-width: 100%;
@@ -156,9 +159,9 @@
             min-height: 120px;
             padding: 16px;
             border-radius: var(--border-radius);
-            border: 2px solid transparent;
+            border: 2px solid #333333;
             font-size: 16px;
-            background-color: rgba(0, 0, 0, 0.03);
+            background-color: #272727;
             color: var(--text-color);
             resize: vertical;
             transition: all var(--transition-speed) ease;
@@ -167,9 +170,9 @@
 
         textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
-            background-color: rgba(0, 0, 0, 0.02);
-            box-shadow: 0 0 0 3px rgba(36, 129, 204, 0.2);
+            border-color: #555555;
+            background-color: #2a2a2a;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
         }
 
         .character-count {
@@ -196,11 +199,13 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
         }
 
         button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.25);
+            background-color: #333333;
         }
 
         button:active:not(:disabled) {
@@ -290,19 +295,21 @@
 
         #downloadButton {
             flex: 1;
-            background: linear-gradient(45deg, var(--primary-color), #6c5ce7);
+            background-color: #000000;
+            border: 1px solid #333333;
             min-width: 140px;
         }
 
         #regenerateButton {
             flex: 1;
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: #333333;
             color: var(--text-color);
+            border: 1px solid #444444;
             min-width: 140px;
         }
 
         #regenerateButton:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: #444444;
         }
 
         .icon {
@@ -387,9 +394,10 @@
         }
         
         .settings-dropdown {
-            background-color: rgba(0, 0, 0, 0.03);
+            background-color: #2a2a2a;
             border-radius: var(--border-radius);
             padding: 2px;
+            border: 1px solid #333333;
         }
         
         .settings-summary {
@@ -405,17 +413,18 @@
         }
         
         .settings-summary:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: #333333;
         }
         
         .settings-options {
             padding: 16px;
-            background-color: var(--card-bg-color);
+            background-color: #2a2a2a;
             border-radius: var(--border-radius);
             margin-top: 8px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            border-top: 1px solid #333333;
         }
         
         .settings-option {

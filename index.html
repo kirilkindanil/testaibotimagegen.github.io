@@ -679,16 +679,40 @@
         // API для взаимодействия с серверной частью
         async function generateImageAPI(prompt, settings) {
             try {
-                // В боевых условиях здесь не нужно делать запрос к API напрямую
-                // Мы просто отправляем промпт и настройки боту, а бот уже генерирует изображение
-                // и вызывает отправку результата в чат
+                // Отправляем данные боту через Telegram Mini App API
+                tg.sendData(JSON.stringify({
+                    prompt: prompt,
+                    settings: settings,
+                    image_generated: false
+                }));
                 
-                // Имитация успешного ответа - в реальности мы здесь не получаем ссылку на изображение,
-                // так как оно будет отправлено в чат
-                return "generated-image";
+                // Возвращаем временный идентификатор
+                return "pending";
             } catch (error) {
                 throw new Error("Ошибка генерации изображения. Пожалуйста, попробуйте еще раз или измените запрос.");
             }
+        }
+        
+        // Функция для проверки наличия изображения по URL
+        async function checkImageExists(imageUrl, maxAttempts = 30, intervalMs = 2000) {
+            let attempts = 0;
+            
+            while (attempts < maxAttempts) {
+                try {
+                    const response = await fetch(imageUrl, { method: 'HEAD' });
+                    if (response.ok) {
+                        return true;
+                    }
+                } catch (e) {
+                    console.log('Error checking image:', e);
+                }
+                
+                attempts++;
+                console.log(`Checking for image... Attempt ${attempts}/${maxAttempts}`);
+                await new Promise(resolve => setTimeout(resolve, intervalMs));
+            }
+            
+            return false;
         }
 
         // Генерация изображения
@@ -733,13 +757,53 @@
                         // Вызываем API для генерации изображения
                         await generateImageAPI(prompt, currentSettings);
                         
-                        // В нашем случае мы не получаем URL изображения напрямую,
-                        // так как оно генерируется на сервере и хранится там
-                        // Устанавливаем заглушку для предварительного просмотра
+                        // Пытаемся получить сгенерированное изображение
+                        // Получаем ID пользователя из Telegram WebApp API
+                        const userId = tg.initDataUnsafe.user.id;
+                        const imageUrl = `http://localhost:8080/api/image/${userId}`;
                         
-                        // Получаем размеры из настроек
-                        const [width, height] = currentSettings.imageSize.split('x');
-                        previewImage.src = `/api/placeholder/${width}/${height}`; // Заглушка с правильными размерами
+                        // Периодически проверяем, появилось ли изображение
+                        const imageExists = await checkImageExists(imageUrl);
+                        
+                        if (imageExists) {
+                            // Если изображение найдено, показываем его
+                            previewImage.src = `${imageUrl}?t=${new Date().getTime()}`; // Добавляем временную метку, чтобы избежать кеширования
+                            
+                            previewImage.onload = () => {
+                                // Плавно показываем изображение после загрузки
+                                clearInterval(dotsInterval);
+                                loadingIndicator.style.display = 'none';
+                                
+                                imageContainer.style.display = 'flex';
+                                imageContainer.style.animation = 'scaleIn 0.4s ease forwards';
+                                
+                                // Скролл к изображению
+                                setTimeout(() => {
+                                    imageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                }, 100);
+                            };
+                        } else {
+                            // Если изображение не найдено после нескольких попыток,
+                            // показываем заглушку и сообщаем пользователю
+                            clearInterval(dotsInterval);
+                            loadingIndicator.style.display = 'none';
+                            
+                            // Получаем размеры из настроек
+                            const [width, height] = currentSettings.imageSize.split('x');
+                            previewImage.src = `/api/placeholder/${width}/${height}`; // Заглушка с правильными размерами
+                            
+                            previewImage.onload = () => {
+                                imageContainer.style.display = 'flex';
+                                imageContainer.style.animation = 'scaleIn 0.4s ease forwards';
+                                
+                                // Показываем сообщение о том, что изображение было отправлено в чат
+                                showMessage("Изображение было отправлено в чат Telegram");
+                                
+                                setTimeout(() => {
+                                    imageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                }, 100);
+                            };
+                        }
                         
                         previewImage.onload = () => {
                             // Плавно показываем изображение после загрузки
@@ -781,6 +845,29 @@
             setTimeout(() => {
                 errorContainer.classList.remove('animate__animated', 'animate__shakeX');
             }, 1000);
+        }
+        
+        // Показать сообщение пользователю
+        function showMessage(message) {
+            // Создаем элемент для сообщения, если его еще нет
+            let messageElement = document.getElementById('userMessage');
+            if (!messageElement) {
+                messageElement = document.createElement('div');
+                messageElement.id = 'userMessage';
+                messageElement.style.cssText = `
+                    background-color: rgba(36, 129, 204, 0.1);
+                    border-left: 4px solid var(--primary-color);
+                    padding: 12px 16px;
+                    margin: 16px 0;
+                    border-radius: var(--border-radius);
+                    color: var(--text-color);
+                    font-size: 14px;
+                    animation: fadeIn 0.3s ease;
+                `;
+                imageContainer.appendChild(messageElement);
+            }
+            
+            messageElement.textContent = message;
         }
 
         // Обработчики событий

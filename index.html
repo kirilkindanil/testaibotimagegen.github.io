@@ -1,745 +1,4 @@
-<script>
-        // Инициализация Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        
-        // Показ загрузочного экрана и скрытие основного контента
-        document.addEventListener('DOMContentLoaded', function() {
-            // Задержка для отображения загрузочного экрана
-            setTimeout(function() {
-                // Скрываем загрузочный экран
-                const loadingScreen = document.getElementById('loading-screen');
-                loadingScreen.style.opacity = '0';
-                loadingScreen.style.visibility = 'hidden';
-                
-                // Показываем основной контент
-                const mainContent = document.querySelector('.main-content');
-                mainContent.style.opacity = '1';
-                
-                // Отмечаем, что страница загружена
-                document.body.classList.add('loaded');
-                
-                // Расширяем окно WebApp
-                tg.expand();
-                tg.enableClosingConfirmation();
-            }, 1500); // Показываем загрузочный экран на 1.5 секунды
-        });
-
-        // Получаем элементы DOM
-        const promptInput = document.getElementById('promptInput');
-        const characterCount = document.querySelector('.character-count');
-        const generateButton = document.getElementById('generateButton');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const loadingDots = document.getElementById('loadingDots');
-        const errorContainer = document.getElementById('errorContainer');
-        const imageContainer = document.getElementById('imageContainer');
-        const previewImage = document.getElementById('previewImage');
-        const downloadButton = document.getElementById('downloadButton');
-        const regenerateButton = document.getElementById('regenerateButton');
-
-        // Текущие настройки
-        let currentPrompt = '';
-        let currentImageUrl = '';
-        let currentSettings = {
-            imageSize: '512x512',
-            style: 'default', 
-            guidance: 7
-        };
-        
-        // Максимальное количество символов
-        const MAX_CHARS = 500;
-
-        // Обновление счетчика символов
-        promptInput.addEventListener('input', function() {
-            const length = this.value.length;
-            characterCount.textContent = `${length}/${MAX_CHARS}`;
-            
-            if (length > MAX_CHARS) {
-                characterCount.style.color = '#e74c3c';
-                this.value = this.value.substring(0, MAX_CHARS);
-                characterCount.textContent = `${MAX_CHARS}/${MAX_CHARS}`;
-            } else {
-                characterCount.style.color = 'var(--hint-color)';
-            }
-        });
-
-        // Анимация точек загрузки
-        function animateLoadingDots() {
-            let count = 0;
-            return setInterval(() => {
-                count = (count + 1) % 4;
-                const dots = '.'.repeat(count);
-                loadingDots.textContent = dots.padEnd(3, ' ');
-            }, 500);
-        }
-
-        // API для взаимодействия с серверной частью
-        async function generateImageAPI(prompt, settings) {
-            try {
-                // В боевых условиях здесь не нужно делать запрос к API напрямую
-                // Мы просто отправляем промпт и настройки боту, а бот уже генерирует изображение
-                // и вызывает отправку результата в чат
-                
-                // Имитация успешного ответа - в реальности мы здесь не получаем ссылку на изображение,
-                // так как оно будет отправлено в чат
-                return "generated-image";
-            } catch (error) {
-                throw new Error("Ошибка генерации изображения. Пожалуйста, попробуйте еще раз или измените запрос.");
-            }
-        }
-
-        // Генерация изображения
-        async function generateImage() {
-            const prompt = promptInput.value.trim();
-            
-            if (!prompt) {
-                showError("Пожалуйста, введите описание для генерации изображения");
-                return;
-            }
-
-            // Сохраняем текущий промпт
-            currentPrompt = prompt;
-
-            // Скрываем карточку с вводом и показываем индикатор загрузки
-            const card = document.querySelector('.card');
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(-20px)';
-            
-            setTimeout(() => {
-                card.style.display = 'none';
-                
-                // Показываем индикатор загрузки
-                generateButton.disabled = true;
-                loadingIndicator.style.display = 'block';
-                loadingIndicator.style.opacity = '1';
-                loadingIndicator.classList.add('animate__animated', 'animate__fadeIn');
-                errorContainer.style.display = 'none';
-                imageContainer.style.display = 'none';
-                
-                // Анимация точек загрузки
-                const dotsInterval = animateLoadingDots();
-
-                // Асинхронная функция для генерации изображения
-                (async () => {
-                    try {
-                        // Получаем настройки
-                        currentSettings.imageSize = document.getElementById('imageSize').value;
-                        currentSettings.style = document.getElementById('styleSelect').value;
-                        currentSettings.guidance = document.getElementById('guidance').value;
-                        
-                        // Вызываем API для генерации изображения
-                        await generateImageAPI(prompt, currentSettings);
-                        
-                        // В нашем случае мы не получаем URL изображения напрямую,
-                        // так как оно генерируется на сервере и хранится там
-                        // Устанавливаем заглушку для предварительного просмотра
-                        
-                        // Получаем размеры из настроек
-                        const [width, height] = currentSettings.imageSize.split('x');
-                        previewImage.src = `/api/placeholder/${width}/${height}`; // Заглушка с правильными размерами
-                        
-                        previewImage.onload = () => {
-                            // Плавно показываем изображение после загрузки
-                            clearInterval(dotsInterval);
-                            loadingIndicator.style.display = 'none';
-                            
-                            imageContainer.style.display = 'flex';
-                            imageContainer.style.animation = 'scaleIn 0.4s ease forwards';
-                            
-                            // Скролл к изображению
-                            setTimeout(() => {
-                                imageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                            }, 100);
-                        };
-                        
-                        generateButton.disabled = false;
-                    } catch (error) {
-                        clearInterval(dotsInterval);
-                        showError(error.message);
-                        loadingIndicator.style.display = 'none';
-                        generateButton.disabled = false;
-                        
-                        // В случае ошибки показываем карточку ввода снова
-                        card.style.display = 'block';
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0)';
-                        }, 10);
-                    }
-                })();
-            }, 300); // Ждем завершения анимации скрытия
-        }
-
-        // Показать сообщение об ошибке
-        function showError(message) {
-            errorContainer.textContent = message;
-            errorContainer.style.display = 'block';
-            errorContainer.classList.add('animate__animated', 'animate__shakeX');
-            setTimeout(() => {
-                errorContainer.classList.remove('animate__animated', 'animate__shakeX');
-            }, 1000);
-        }
-
-        // Обработчики событий
-        generateButton.addEventListener('click', generateImage);
-        
-        // Обновление отображения значения слайдера
-        const guidanceSlider = document.getElementById('guidance');
-        const guidanceValue = document.getElementById('guidanceValue');
-        guidanceSlider.addEventListener('input', function() {
-            guidanceValue.textContent = this.value;
-        });
-        
-        // Также генерировать по нажатию Enter, если пользователь находится в поле ввода
-        promptInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                generateImage();
-            }
-        });
-
-        regenerateButton.addEventListener('click', function() {
-            // Скрываем изображение
-            imageContainer.style.opacity = '0';
-            
-            setTimeout(() => {
-                imageContainer.style.display = 'none';
-                
-                // Показываем карточку с вводом
-                const card = document.querySelector('.card');
-                card.style.display = 'block';
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                    
-                    // Фокус на поле ввода
-                    promptInput.focus();
-                    
-                    // Прокрутка наверх, если нужно
-                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 10);
-            }, 300);
-        });
-
-        downloadButton.addEventListener('click', function() {
-            // Добавляем анимацию нажатия
-            this.classList.add('animate__animated', 'animate__pulse');
-            
-            // Отправляем данные обратно в Telegram бот
-            tg.sendData(JSON.stringify({
-                prompt: currentPrompt,
-                settings: currentSettings,
-                image_generated: true // Флаг, указывающий, что изображение уже сгенерировано
-            }));
-            
-            // Закрываем WebApp
-            setTimeout(() => {
-                tg.close();
-            }, 300);
-        });
-
-        // Настройка кнопки "Назад" в WebApp
-        tg.BackButton.onClick(function() {
-            // Если изображение уже сгенерировано, возвращаемся к форме ввода
-            if (imageContainer.style.display !== 'none') {
-                imageContainer.style.display = 'none';
-                errorContainer.style.display = 'none';
-                
-                // Показываем карточку с вводом
-                const card = document.querySelector('.card');
-                card.style.display = 'block';
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, 10);
-                
-                tg.BackButton.hide();
-            } else {
-                // Иначе закрываем WebApp
-                tg.close();
-            }
-        });
-
-        // Показываем кнопку "Назад", когда изображение отображается
-        const showBackButton = () => {
-            if (imageContainer.style.display !== 'none') {
-                tg.BackButton.show();
-            } else {
-                tg.BackButton.hide();
-            }
-        };
-
-        // Наблюдатель для изменения отображения контейнера с изображением
-        const observer = new MutationObserver(showBackButton);
-        observer.observe(imageContainer, { attributes: true, attributeFilter: ['style'] });
-
-        // Исходно скрываем кнопку "Назад"
-        tg.BackButton.hide();
-        
-        // Инициализация счетчика символов
-        promptInput.dispatchEvent(new Event('input'));
-    </script>
-</body>
-</html>
-
-    <script>
-        // Инициализация Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
-
-        // Получаем элементы DOM
-        const promptInput = document.getElementById('promptInput');
-        const characterCount = document.querySelector('.character-count');
-        const generateButton = document.getElementById('generateButton');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const loadingDots = document.getElementById('loadingDots');
-        const errorContainer = document.getElementById('errorContainer');
-        const imageContainer = document.getElementById('imageContainer');
-        const previewImage = document.getElementById('previewImage');
-        const downloadButton = document.getElementById('downloadButton');
-        const regenerateButton = document.getElementById('regenerateButton');
-
-        // Текущие настройки
-        let currentPrompt = '';
-        let currentImageUrl = '';
-        let currentSettings = {
-            imageSize: '512x512',
-            style: 'default', 
-            guidance: 7
-        };
-        
-        // Максимальное количество символов
-        const MAX_CHARS = 500;
-
-        // Обновление счетчика символов
-        promptInput.addEventListener('input', function() {
-            const length = this.value.length;
-            characterCount.textContent = `${length}/${MAX_CHARS}`;
-            
-            if (length > MAX_CHARS) {
-                characterCount.style.color = '#e74c3c';
-                this.value = this.value.substring(0, MAX_CHARS);
-                characterCount.textContent = `${MAX_CHARS}/${MAX_CHARS}`;
-            } else {
-                characterCount.style.color = 'var(--hint-color)';
-            }
-        });
-
-        // Анимация точек загрузки
-        function animateLoadingDots() {
-            let count = 0;
-            return setInterval(() => {
-                count = (count + 1) % 4;
-                const dots = '.'.repeat(count);
-                loadingDots.textContent = dots.padEnd(3, ' ');
-            }, 500);
-        }
-
-        // API для взаимодействия с серверной частью
-        async function generateImageAPI(prompt, settings) {
-            try {
-                // В боевых условиях здесь не нужно делать запрос к API напрямую
-                // Мы просто отправляем промпт и настройки боту, а бот уже генерирует изображение
-                // и вызывает отправку результата в чат
-                
-                // Имитация успешного ответа - в реальности мы здесь не получаем ссылку на изображение,
-                // так как оно будет отправлено в чат
-                return "generated-image";
-            } catch (error) {
-                throw new Error("Ошибка генерации изображения. Пожалуйста, попробуйте еще раз или измените запрос.");
-            }
-        }
-
-        // Генерация изображения
-        async function generateImage() {
-            const prompt = promptInput.value.trim();
-            
-            if (!prompt) {
-                showError("Пожалуйста, введите описание для генерации изображения");
-                return;
-            }
-
-            // Сохраняем текущий промпт
-            currentPrompt = prompt;
-
-            // Скрываем карточку с вводом и показываем индикатор загрузки
-            const card = document.querySelector('.card');
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(-20px)';
-            
-            setTimeout(() => {
-                card.style.display = 'none';
-                
-                // Показываем индикатор загрузки
-                generateButton.disabled = true;
-                loadingIndicator.style.display = 'block';
-                loadingIndicator.style.opacity = '1';
-                loadingIndicator.classList.add('animate__animated', 'animate__fadeIn');
-                errorContainer.style.display = 'none';
-                imageContainer.style.display = 'none';
-                
-                // Анимация точек загрузки
-                const dotsInterval = animateLoadingDots();
-
-                // Асинхронная функция для генерации изображения
-                (async () => {
-                    try {
-                        // Получаем настройки
-                        currentSettings.imageSize = document.getElementById('imageSize').value;
-                        currentSettings.style = document.getElementById('styleSelect').value;
-                        currentSettings.guidance = document.getElementById('guidance').value;
-                        
-                        // Вызываем API для генерации изображения
-                        await generateImageAPI(prompt, currentSettings);
-                        
-                        // В нашем случае мы не получаем URL изображения напрямую,
-                        // так как оно генерируется на сервере и хранится там
-                        // Устанавливаем заглушку для предварительного просмотра
-                        
-                        // Получаем размеры из настроек
-                        const [width, height] = currentSettings.imageSize.split('x');
-                        previewImage.src = `/api/placeholder/${width}/${height}`; // Заглушка с правильными размерами
-                        
-                        previewImage.onload = () => {
-                            // Плавно показываем изображение после загрузки
-                            clearInterval(dotsInterval);
-                            loadingIndicator.style.display = 'none';
-                            
-                            imageContainer.style.display = 'flex';
-                            imageContainer.style.animation = 'scaleIn 0.4s ease forwards';
-                            
-                            // Скролл к изображению
-                            setTimeout(() => {
-                                imageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                            }, 100);
-                        };
-                        
-                        generateButton.disabled = false;
-                    } catch (error) {
-                        clearInterval(dotsInterval);
-                        showError(error.message);
-                        loadingIndicator.style.display = 'none';
-                        generateButton.disabled = false;
-                        
-                        // В случае ошибки показываем карточку ввода снова
-                        card.style.display = 'block';
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0)';
-                        }, 10);
-                    }
-                })();
-            }, 300); // Ждем завершения анимации скрытия
-        }
-
-        // Показать сообщение об ошибке
-        function showError(message) {
-            errorContainer.textContent = message;
-            errorContainer.style.display = 'block';
-            errorContainer.classList.add('animate__animated', 'animate__shakeX');
-            setTimeout(() => {
-                errorContainer.classList.remove('animate__animated', 'animate__shakeX');
-            }, 1000);
-        }
-
-        // Обработчики событий
-        generateButton.addEventListener('click', generateImage);
-        
-        // Обновление отображения значения слайдера
-        const guidanceSlider = document.getElementById('guidance');
-        const guidanceValue = document.getElementById('guidanceValue');
-        guidanceSlider.addEventListener('input', function() {
-            guidanceValue.textContent = this.value;
-        });
-        
-        // Также генерировать по нажатию Enter, если пользователь находится в поле ввода
-        promptInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                generateImage();
-            }
-        });
-
-        regenerateButton.addEventListener('click', function() {
-            // Скрываем изображение
-            imageContainer.style.opacity = '0';
-            
-            setTimeout(() => {
-                imageContainer.style.display = 'none';
-                
-                // Показываем карточку с вводом
-                const card = document.querySelector('.card');
-                card.style.display = 'block';
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                    
-                    // Фокус на поле ввода
-                    promptInput.focus();
-                    
-                    // Прокрутка наверх, если нужно
-                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 10);
-            }, 300);
-        });
-
-        downloadButton.addEventListener('click', function() {
-            // Добавляем анимацию нажатия
-            this.classList.add('animate__animated', 'animate__pulse');
-            
-            // Отправляем данные обратно в Telegram бот
-            tg.sendData(JSON.stringify({
-                prompt: currentPrompt,
-                settings: currentSettings,
-                image_generated: true // Флаг, указывающий, что изображение уже сгенерировано
-            }));
-            
-            // Закрываем WebApp
-            setTimeout(() => {
-                tg.close();
-            }, 300);
-        });
-
-        // Настройка кнопки "Назад" в WebApp
-        tg.BackButton.onClick(function() {
-            // Если изображение уже сгенерировано, возвращаемся к форме ввода
-            if (imageContainer.style.display !== 'none') {
-                imageContainer.style.display = 'none';
-                errorContainer.style.display = 'none';
-                
-                // Показываем карточку с вводом
-                const card = document.querySelector('.card');
-                card.style.display = 'block';
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, 10);
-                
-                tg.BackButton.hide();
-            } else {
-                // Иначе закрываем WebApp
-                tg.close();
-            }
-        });
-
-        // Показываем кнопку "Назад", когда изображение отображается
-        const showBackButton = () => {
-            if (imageContainer.style.display !== 'none') {
-                tg.BackButton.show();
-            } else {
-                tg.BackButton.hide();
-            }
-        };
-
-        // Наблюдатель для изменения отображения контейнера с изображением
-        const observer = new MutationObserver(showBackButton);
-        observer.observe(imageContainer, { attributes: true, attributeFilter: ['style'] });
-
-        // Исходно скрываем кнопку "Назад"
-        tg.BackButton.hide();
-        
-        // Инициализация счетчика символов
-        promptInput.dispatchEvent(new Event('input'));
-        
-        // Добавляем анимацию элементов при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            const elements = document.querySelectorAll('.card, .header');
-            elements.forEach((el, index) => {
-                setTimeout(() => {
-                    el.style.opacity = '1';
-                }, index * 100);
-            });
-        });
-    </script>
-</body>
-</html>    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Midjourney Арт-Генератор</h1>
-            <p>Опишите детально то, что вы хотите увидеть. Чем точнее описание, тем лучше результат!</p>
-        </div>
-
-        <!-- Карточка ввода -->
-        <div class="card">
-            <div class="input-container">
-                <div class="textarea-wrapper">
-                    <textarea id="promptInput" placeholder="Например: 'Фантастический пейзаж с парящими в небе островами, водопадами, стекающими в бездну, и древним замком на самом высоком острове. В аниме стиле, яркие цвета, детализированное изображение'"></textarea>
-                    <div class="character-count">0/500</div>
-                </div>
-                
-                <!-- Дополнительные настройки -->
-                <div class="settings-container">
-                    <details class="settings-dropdown">
-                        <summary class="settings-summary">Настройки генерации ⚙️</summary>
-                        <div class="settings-options">
-                            <!-- Выбор размера изображения -->
-                            <div class="settings-option">
-                                <label for="imageSize">Размер изображения:</label>
-                                <select id="imageSize" class="size-select">
-                                    <option value="512x512">512×512 (стандартный)</option>
-                                    <option value="768x768">768×768 (большой)</option>
-                                    <option value="1024x1024">1024×1024 (очень большой)</option>
-                                    <option value="512x768">512×768 (портретный)</option>
-                                    <option value="768x512">768×512 (ландшафтный)</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Выбор стиля -->
-                            <div class="settings-option">
-                                <label for="styleSelect">Стиль изображения:</label>
-                                <select id="styleSelect" class="style-select">
-                                    <option value="default">Обычный</option>
-                                    <option value="anime">Аниме</option>
-                                    <option value="realistic">Фотореалистичный</option>
-                                    <option value="painting">Живопись</option>
-                                    <option value="3d">3D Рендер</option>
-                                    <option value="sketch">Скетч</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Настройка генерации -->
-                            <div class="settings-option">
-                                <label for="guidance">Степень соответствия запросу:</label>
-                                <input type="range" id="guidance" min="1" max="20" value="7" class="slider">
-                                <span id="guidanceValue">7</span>
-                            </div>
-                        </div>
-                    </details>
-                </div>
-                
-                <button id="generateButton">
-                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 3V9L16 5L12 3ZM16.24 7.76C15.07 6.59 13.54 6 12 6V12L18 18C19.26 15.44 19.26 12.56 18 10C17.33 8.85 16.24 7.76 16.24 7.76ZM10.41 20.84L12 22.41L13.59 20.84C13.22 20.94 12.61 21 12 21C11.39 21 10.78 20.94 10.41 20.84ZM7.76 16.24C6.59 15.07 6 13.54 6 12H12L18 18C15.44 19.26 12.56 19.26 10 18C8.85 17.33 7.76 16.24 7.76 16.24ZM12 9V3C10.05 3 8.19 3.81 6.76 5.24C5.33 6.67 4.52 8.53 4.52 10.48C4.52 12.43 5.33 14.29 6.76 15.72L12 21L17.24 15.76C18.67 14.33 19.48 12.47 19.48 10.52C19.48 8.57 18.67 6.71 17.24 5.28C15.81 3.85 13.95 3.04 12 3.04V9H12Z"/>
-                    </svg>
-                    Сгенерировать
-                </button>
-            </div>
-        </div>
-
-        <div id="loadingIndicator" class="loading-indicator">
-            <div class="loader"></div>
-            <p>Создаю шедевр <span id="loadingDots">...</span></p>
-            <p>Это может занять до 20 секунд</p>
-        </div>
-
-        <div id="errorContainer" class="error-container"></div>
-
-        <div id="imageContainer" class="image-container">
-            <div class="image-wrapper">
-                <img id="previewImage" class="preview-image" alt="Сгенерированное изображение" loading="lazy">
-            </div>
-            
-            <div class="buttons-container">
-                <button id="downloadButton" data-tooltip="Отправить в чат">
-                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 20H19V18H5V20ZM19 9H15V3H9V9H5L12 16L19 9Z"/>
-                    </svg>
-                    Скачать
-                </button>
-                <button id="regenerateButton" data-tooltip="Создать новую версию">
-                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4C7.58 4 4.01 7.58 4.01 12C4.01 16.42 7.58 20 12 20C15.73 20 18.84 17.45 19.73 14H17.65C16.83 16.33 14.61 18 12 18C8.69 18 6 15.31 6 12C6 8.69 8.69 6 12 6C13.66 6 15.14 6.69 16.22 7.78L13 11H20V4L17.65 6.35Z"/>
-                    </svg>
-                    Создать ещё
-                </button>
-            </div>
-        </div>
-    </div>        
-        .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 5px;
-            background: #d3d3d3;
-            outline: none;
-            opacity: 0.7;
-            -webkit-transition: .2s;
-            transition: opacity .2s;
-        }
-        
-        .slider:hover {
-            opacity: 1;
-        }
-        
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-        }
-        
-        .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-        }
-
-        /* Адаптивный дизайн */
-        @media (min-width: 768px) {
-            .container {
-                max-width: 600px;
-                padding: 40px;
-            }
-            
-            .buttons-container {
-                max-width: 500px;
-                margin: 0 auto;
-            }
-        }
-
-        /* Мини-подсказки при наведении */
-        [data-tooltip] {
-            position: relative;
-        }
-
-        [data-tooltip]::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 120%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        [data-tooltip]:hover::after {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Темы для подсветки загрузки */
-        .theme-pulse {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            color: white;
-        }
-
-        @keyframes gradient {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -749,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         /* Загрузочный экран */
-        #loading-screen {
+        #splash-screen {
             position: fixed;
             top: 0;
             left: 0;
@@ -757,48 +16,25 @@
             height: 100%;
             background-color: var(--tg-theme-bg-color, #fff);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            transition: opacity 0.3s ease;
         }
         
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(0, 0, 0, 0.1);
-            border-top-color: var(--tg-theme-button-color, #2481cc);
+        .splash-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--tg-theme-button-color, #2481cc);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            animation: rotate 1s linear infinite;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
         }
         
-        .loading-text {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-            color: var(--tg-theme-text-color, #000);
-            font-size: 16px;
-        }
-        
-        /* Скрыть основной контент до полной загрузки */
-        .main-content {
-            opacity: 0;
-            transition: opacity 0.5s ease-in;
-        }
-        
-        /* Скрыть контент при загрузке страницы, пока не загрузятся стили */
-        body {
-            visibility: hidden;
-        }
-        
-        body.loaded {
-            visibility: visible;
-        }
-
         :root {
             --primary-color: var(--tg-theme-button-color, #2481cc);
             --primary-text-color: var(--tg-theme-button-text-color, #fff);
@@ -1073,6 +309,15 @@
             }
         }
 
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         @keyframes pulse {
             0% {
                 opacity: 0.6;
@@ -1268,318 +513,374 @@
 </head>
 <body>
     <!-- Загрузочный экран -->
-    <div id="loading-screen">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Загрузка...</div>
+    <div id="splash-screen">
+        <div class="splash-spinner"></div>
     </div>
 
-    <!-- Основной контент (скрыт до полной загрузки) -->
-    <div class="main-content">
-        <div class="container">
-            <div class="header">
-                <h1>Арт-Генератор</h1>
-                <p>Опишите детально то, что вы хотите увидеть</p>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>Арт-Генератор</h1>
+            <p>Опишите детально то, что вы хотите увидеть</p>
+        </div>
 
-            <!-- Карточка ввода -->
-            <div class="card">
-                <div class="input-container">
-                    <div class="textarea-wrapper">
-                        <textarea id="promptInput" placeholder="Например: 'Фантастический пейзаж с парящими в небе островами, водопадами и древним замком'"></textarea>
-                        <div class="character-count">0/500</div>
-                    </div>
-                    
-                    <!-- Дополнительные настройки -->
-                    <div class="settings-container">
-                        <details class="settings-dropdown">
-                            <summary class="settings-summary">Настройки генерации ⚙️</summary>
-                            <div class="settings-options">
-                                <!-- Выбор размера изображения -->
-                                <div class="settings-option">
-                                    <label for="imageSize">Размер изображения:</label>
-                                    <select id="imageSize" class="size-select">
-                                        <option value="512x512">512×512 (стандартный)</option>
-                                        <option value="768x768">768×768 (большой)</option>
-                                        <option value="1024x1024">1024×1024 (очень большой)</option>
-                                        <option value="512x768">512×768 (портретный)</option>
-                                        <option value="768x512">768×512 (ландшафтный)</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Выбор стиля -->
-                                <div class="settings-option">
-                                    <label for="styleSelect">Стиль изображения:</label>
-                                    <select id="styleSelect" class="style-select">
-                                        <option value="default">Обычный</option>
-                                        <option value="anime">Аниме</option>
-                                        <option value="realistic">Фотореалистичный</option>
-                                        <option value="painting">Живопись</option>
-                                        <option value="3d">3D Рендер</option>
-                                        <option value="sketch">Скетч</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Настройка генерации -->
-                                <div class="settings-option">
-                                    <label for="guidance">Степень соответствия запросу:</label>
-                                    <input type="range" id="guidance" min="1" max="20" value="7" class="slider">
-                                    <span id="guidanceValue">7</span>
-                                </div>
-                            </div>
-                        </details>
-                    </div>
-                    
-                    <button id="generateButton">
-                        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 3V9L16 5L12 3ZM16.24 7.76C15.07 6.59 13.54 6 12 6V12L18 18C19.26 15.44 19.26 12.56 18 10C17.33 8.85 16.24 7.76 16.24 7.76ZM10.41 20.84L12 22.41L13.59 20.84C13.22 20.94 12.61 21 12 21C11.39 21 10.78 20.94 10.41 20.84ZM7.76 16.24C6.59 15.07 6 13.54 6 12H12L18 18C15.44 19.26 12.56 19.26 10 18C8.85 17.33 7.76 16.24 7.76 16.24ZM12 9V3C10.05 3 8.19 3.81 6.76 5.24C5.33 6.67 4.52 8.53 4.52 10.48C4.52 12.43 5.33 14.29 6.76 15.72L12 21L17.24 15.76C18.67 14.33 19.48 12.47 19.48 10.52C19.48 8.57 18.67 6.71 17.24 5.28C15.81 3.85 13.95 3.04 12 3.04V9H12Z"/>
-                        </svg>
-                        Сгенерировать
-                    </button>
-                </div>
-            </div>
-
-            <div id="loadingIndicator" class="loading-indicator">
-                <div class="loader"></div>
-                <p>Создаю изображение<span id="loadingDots">...</span></p>
-                <p>Это может занять до 20 секунд</p>
-            </div>
-
-            <div id="errorContainer" class="error-container"></div>
-
-            <div id="imageContainer" class="image-container">
-                <div class="image-wrapper">
-                    <img id="previewImage" class="preview-image" alt="Сгенерированное изображение" loading="lazy">
+        <!-- Карточка ввода -->
+        <div class="card">
+            <div class="input-container">
+                <div class="textarea-wrapper">
+                    <textarea id="promptInput" placeholder="Например: 'Фантастический пейзаж с парящими в небе островами, водопадами и древним замком'"></textarea>
+                    <div class="character-count">0/500</div>
                 </div>
                 
-                <div class="buttons-container">
-                    <button id="downloadButton" data-tooltip="Отправить в чат">
-                        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 20H19V18H5V20ZM19 9H15V3H9V9H5L12 16L19 9Z"/>
-                        </svg>
-                        Скачать
-                    </button>
-                    <button id="regenerateButton" data-tooltip="Создать новую версию">
-                        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4C7.58 4 4.01 7.58 4.01 12C4.01 16.42 7.58 20 12 20C15.73 20 18.84 17.45 19.73 14H17.65C16.83 16.33 14.61 18 12 18C8.69 18 6 15.31 6 12C6 8.69 8.69 6 12 6C13.66 6 15.14 6.69 16.22 7.78L13 11H20V4L17.65 6.35Z"/>
-                        </svg>
-                        Создать ещё
-                    </button>
+                <!-- Дополнительные настройки -->
+                <div class="settings-container">
+                    <details class="settings-dropdown">
+                        <summary class="settings-summary">Настройки генерации ⚙️</summary>
+                        <div class="settings-options">
+                            <!-- Выбор размера изображения -->
+                            <div class="settings-option">
+                                <label for="imageSize">Размер изображения:</label>
+                                <select id="imageSize" class="size-select">
+                                    <option value="512x512">512×512 (стандартный)</option>
+                                    <option value="768x768">768×768 (большой)</option>
+                                    <option value="1024x1024">1024×1024 (очень большой)</option>
+                                    <option value="512x768">512×768 (портретный)</option>
+                                    <option value="768x512">768×512 (ландшафтный)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Выбор стиля -->
+                            <div class="settings-option">
+                                <label for="styleSelect">Стиль изображения:</label>
+                                <select id="styleSelect" class="style-select">
+                                    <option value="default">Обычный</option>
+                                    <option value="anime">Аниме</option>
+                                    <option value="realistic">Фотореалистичный</option>
+                                    <option value="painting">Живопись</option>
+                                    <option value="3d">3D Рендер</option>
+                                    <option value="sketch">Скетч</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Настройка генерации -->
+                            <div class="settings-option">
+                                <label for="guidance">Степень соответствия запросу:</label>
+                                <input type="range" id="guidance" min="1" max="20" value="7" class="slider">
+                                <span id="guidanceValue">7</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
+                
+                <button id="generateButton">
+                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3V9L16 5L12 3ZM16.24 7.76C15.07 6.59 13.54 6 12 6V12L18 18C19.26 15.44 19.26 12.56 18 10C17.33 8.85 16.24 7.76 16.24 7.76ZM10.41 20.84L12 22.41L13.59 20.84C13.22 20.94 12.61 21 12 21C11.39 21 10.78 20.94 10.41 20.84ZM7.76 16.24C6.59 15.07 6 13.54 6 12H12L18 18C15.44 19.26 12.56 19.26 10 18C8.85 17.33 7.76 16.24 7.76 16.24ZM12 9V3C10.05 3 8.19 3.81 6.76 5.24C5.33 6.67 4.52 8.53 4.52 10.48C4.52 12.43 5.33 14.29 6.76 15.72L12 21L17.24 15.76C18.67 14.33 19.48 12.47 19.48 10.52C19.48 8.57 18.67 6.71 17.24 5.28C15.81 3.85 13.95 3.04 12 3.04V9H12Z"/>
+                    </svg>
+                    Сгенерировать
+                </button>
             </div>
         </div>
-    </div>: var(--primary-color);
-            animation: spin 1s linear infinite;
-        }
 
-        .error-container {
-            border-radius: var(--border-radius);
-            background-color: rgba(231, 76, 60, 0.1);
-            border-left: 4px solid #e74c3c;
-            padding: 16px;
-            color: #e74c3c;
-            margin: 16px 0;
-            display: none;
-            animation: shake 0.4s ease;
-        }
+        <div id="loadingIndicator" class="loading-indicator">
+            <div class="loader"></div>
+            <p>Создаю изображение<span id="loadingDots">...</span></p>
+            <p>Это может занять до 20 секунд</p>
+        </div>
 
-        .image-container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            opacity: 0;
-            transition: opacity var(--transition-speed) ease;
-        }
+        <div id="errorContainer" class="error-container"></div>
 
-        .image-wrapper {
-            width: 100%;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            background-color: var(--card-bg-color);
-            position: relative;
-        }
+        <div id="imageContainer" class="image-container">
+            <div class="image-wrapper">
+                <img id="previewImage" class="preview-image" alt="Сгенерированное изображение" loading="lazy">
+            </div>
+            
+            <div class="buttons-container">
+                <button id="downloadButton" data-tooltip="Отправить в чат">
+                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 20H19V18H5V20ZM19 9H15V3H9V9H5L12 16L19 9Z"/>
+                    </svg>
+                    Скачать
+                </button>
+                <button id="regenerateButton" data-tooltip="Создать новую версию">
+                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4C7.58 4 4.01 7.58 4.01 12C4.01 16.42 7.58 20 12 20C15.73 20 18.84 17.45 19.73 14H17.65C16.83 16.33 14.61 18 12 18C8.69 18 6 15.31 6 12C6 8.69 8.69 6 12 6C13.66 6 15.14 6.69 16.22 7.78L13 11H20V4L17.65 6.35Z"/>
+                    </svg>
+                    Создать ещё
+                </button>
+            </div>
+        </div>
+    </div>
 
-        .image-wrapper::before {
-            content: "";
-            display: block;
-            padding-top: 100%; /* 1:1 Aspect Ratio */
-        }
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
 
-        .preview-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
+        // Обработка загрузочного экрана
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                // Плавно скрываем загрузочный экран
+                const splashScreen = document.getElementById('splash-screen');
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 300);
+            }, 1000); // Показываем загрузочный экран на 1 секунду
+        });
 
-        .preview-image:hover {
-            transform: scale(1.02);
-        }
+        // Получаем элементы DOM
+        const promptInput = document.getElementById('promptInput');
+        const characterCount = document.querySelector('.character-count');
+        const generateButton = document.getElementById('generateButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const loadingDots = document.getElementById('loadingDots');
+        const errorContainer = document.getElementById('errorContainer');
+        const imageContainer = document.getElementById('imageContainer');
+        const previewImage = document.getElementById('previewImage');
+        const downloadButton = document.getElementById('downloadButton');
+        const regenerateButton = document.getElementById('regenerateButton');
 
-        .buttons-container {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        #downloadButton {
-            flex: 1;
-            background: linear-gradient(45deg, var(--primary-color), #6c5ce7);
-            min-width: 140px;
-        }
-
-        #regenerateButton {
-            flex: 1;
-            background-color: rgba(0, 0, 0, 0.05);
-            color: var(--text-color);
-            min-width: 140px;
-        }
-
-        #regenerateButton:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .icon {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            stroke-width: 0;
-            stroke: currentColor;
-            fill: currentColor;
-            vertical-align: middle;
-        }
-
-        /* Анимации */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 0.6;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0.6;
-            }
-        }
-
-        @keyframes shake {
-            0%, 100% {transform: translateX(0);}
-            10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
-            20%, 40%, 60%, 80% {transform: translateX(5px);}
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
+        // Текущие настройки
+        let currentPrompt = '';
+        let currentImageUrl = '';
+        let currentSettings = {
+            imageSize: '512x512',
+            style: 'default', 
+            guidance: 7
+        };
         
-        /* Стили для настроек генерации */
-        .settings-container {
-            margin-top: 12px;
+        // Максимальное количество символов
+        const MAX_CHARS = 500;
+
+        // Обновление счетчика символов
+        promptInput.addEventListener('input', function() {
+            const length = this.value.length;
+            characterCount.textContent = `${length}/${MAX_CHARS}`;
+            
+            if (length > MAX_CHARS) {
+                characterCount.style.color = '#e74c3c';
+                this.value = this.value.substring(0, MAX_CHARS);
+                characterCount.textContent = `${MAX_CHARS}/${MAX_CHARS}`;
+            } else {
+                characterCount.style.color = 'var(--hint-color)';
+            }
+        });
+
+        // Анимация точек загрузки
+        function animateLoadingDots() {
+            let count = 0;
+            return setInterval(() => {
+                count = (count + 1) % 4;
+                const dots = '.'.repeat(count);
+                loadingDots.textContent = dots.padEnd(3, ' ');
+            }, 500);
         }
-        
-        .settings-dropdown {
-            background-color: rgba(0, 0, 0, 0.03);
-            border-radius: var(--border-radius);
-            padding: 2px;
+
+        // API для взаимодействия с серверной частью
+        async function generateImageAPI(prompt, settings) {
+            try {
+                // В боевых условиях здесь не нужно делать запрос к API напрямую
+                // Мы просто отправляем промпт и настройки боту, а бот уже генерирует изображение
+                // и вызывает отправку результата в чат
+                
+                // Имитация успешного ответа - в реальности мы здесь не получаем ссылку на изображение,
+                // так как оно будет отправлено в чат
+                return "generated-image";
+            } catch (error) {
+                throw new Error("Ошибка генерации изображения. Пожалуйста, попробуйте еще раз или измените запрос.");
+            }
         }
-        
-        .settings-summary {
-            cursor: pointer;
-            padding: 10px 16px;
-            font-weight: 500;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: var(--border-radius);
-            transition: background-color 0.2s ease;
+
+        // Генерация изображения
+        async function generateImage() {
+            const prompt = promptInput.value.trim();
+            
+            if (!prompt) {
+                showError("Пожалуйста, введите описание для генерации изображения");
+                return;
+            }
+
+            // Сохраняем текущий промпт
+            currentPrompt = prompt;
+
+            // Скрываем карточку с вводом и показываем индикатор загрузки
+            const card = document.querySelector('.card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                card.style.display = 'none';
+                
+                // Показываем индикатор загрузки
+                generateButton.disabled = true;
+                loadingIndicator.style.display = 'block';
+                loadingIndicator.style.opacity = '1';
+                loadingIndicator.classList.add('animate__animated', 'animate__fadeIn');
+                errorContainer.style.display = 'none';
+                imageContainer.style.display = 'none';
+                
+                // Анимация точек загрузки
+                const dotsInterval = animateLoadingDots();
+
+                // Асинхронная функция для генерации изображения
+                (async () => {
+                    try {
+                        // Получаем настройки
+                        currentSettings.imageSize = document.getElementById('imageSize').value;
+                        currentSettings.style = document.getElementById('styleSelect').value;
+                        currentSettings.guidance = document.getElementById('guidance').value;
+                        
+                        // Вызываем API для генерации изображения
+                        await generateImageAPI(prompt, currentSettings);
+                        
+                        // В нашем случае мы не получаем URL изображения напрямую,
+                        // так как оно генерируется на сервере и хранится там
+                        // Устанавливаем заглушку для предварительного просмотра
+                        
+                        // Получаем размеры из настроек
+                        const [width, height] = currentSettings.imageSize.split('x');
+                        previewImage.src = `/api/placeholder/${width}/${height}`; // Заглушка с правильными размерами
+                        
+                        previewImage.onload = () => {
+                            // Плавно показываем изображение после загрузки
+                            clearInterval(dotsInterval);
+                            loadingIndicator.style.display = 'none';
+                            
+                            imageContainer.style.display = 'flex';
+                            imageContainer.style.animation = 'scaleIn 0.4s ease forwards';
+                            
+                            // Скролл к изображению
+                            setTimeout(() => {
+                                imageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }, 100);
+                        };
+                        
+                        generateButton.disabled = false;
+                    } catch (error) {
+                        clearInterval(dotsInterval);
+                        showError(error.message);
+                        loadingIndicator.style.display = 'none';
+                        generateButton.disabled = false;
+                        
+                        // В случае ошибки показываем карточку ввода снова
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                        }, 10);
+                    }
+                })();
+            }, 300); // Ждем завершения анимации скрытия
         }
-        
-        .settings-summary:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+
+        // Показать сообщение об ошибке
+        function showError(message) {
+            errorContainer.textContent = message;
+            errorContainer.style.display = 'block';
+            errorContainer.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                errorContainer.classList.remove('animate__animated', 'animate__shakeX');
+            }, 1000);
         }
+
+        // Обработчики событий
+        generateButton.addEventListener('click', generateImage);
         
-        .settings-options {
-            padding: 16px;
-            background-color: var(--card-bg-color);
-            border-radius: var(--border-radius);
-            margin-top: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        // Обновление отображения значения слайдера
+        const guidanceSlider = document.getElementById('guidance');
+        const guidanceValue = document.getElementById('guidanceValue');
+        guidanceSlider.addEventListener('input', function() {
+            guidanceValue.textContent = this.value;
+        });
         
-        .settings-option {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        // Также генерировать по нажатию Enter, если пользователь находится в поле ввода
+        promptInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                generateImage();
+            }
+        });
+
+        regenerateButton.addEventListener('click', function() {
+            // Скрываем изображение
+            imageContainer.style.opacity = '0';
+            
+            setTimeout(() => {
+                imageContainer.style.display = 'none';
+                
+                // Показываем карточку с вводом
+                const card = document.querySelector('.card');
+                card.style.display = 'block';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                    
+                    // Фокус на поле ввода
+                    promptInput.focus();
+                    
+                    // Прокрутка наверх, если нужно
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 10);
+            }, 300);
+        });
+
+        downloadButton.addEventListener('click', function() {
+            // Добавляем анимацию нажатия
+            this.classList.add('animate__animated', 'animate__pulse');
+            
+            // Отправляем данные обратно в Telegram бот
+            tg.sendData(JSON.stringify({
+                prompt: currentPrompt,
+                settings: currentSettings,
+                image_generated: true // Флаг, указывающий, что изображение уже сгенерировано
+            }));
+            
+            // Закрываем WebApp
+            setTimeout(() => {
+                tg.close();
+            }, 300);
+        });
+
+        // Настройка кнопки "Назад" в WebApp
+        tg.BackButton.onClick(function() {
+            // Если изображение уже сгенерировано, возвращаемся к форме ввода
+            if (imageContainer.style.display !== 'none') {
+                imageContainer.style.display = 'none';
+                errorContainer.style.display = 'none';
+                
+                // Показываем карточку с вводом
+                const card = document.querySelector('.card');
+                card.style.display = 'block';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 10);
+                
+                tg.BackButton.hide();
+            } else {
+                // Иначе закрываем WebApp
+                tg.close();
+            }
+        });
+
+        // Показываем кнопку "Назад", когда изображение отображается
+        const showBackButton = () => {
+            if (imageContainer.style.display !== 'none') {
+                tg.BackButton.show();
+            } else {
+                tg.BackButton.hide();
+            }
+        };
+
+        // Наблюдатель для изменения отображения контейнера с изображением
+        const observer = new MutationObserver(showBackButton);
+        observer.observe(imageContainer, { attributes: true, attributeFilter: ['style'] });
+
+        // Исходно скрываем кнопку "Назад"
+        tg.BackButton.hide();
         
-        .settings-option label {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-        
-        .size-select, .style-select {
-            padding: 10px 12px;
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            font-size: 14px;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 16px;
-            padding-right: 40px;
+        // Инициализация счетчика символов
+        promptInput.dispatchEvent(new Event('input'));
+    </script>
+</body>
+</html>

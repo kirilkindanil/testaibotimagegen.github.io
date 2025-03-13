@@ -18,7 +18,6 @@
     
     body {
       background-color: #121212;
-      /* Обновленный путь к фоновому изображению */
       background-image: url('back.png');
       background-size: cover;
       background-position: center;
@@ -27,7 +26,6 @@
       color: white;
     }
     
-    /* Добавляем более темный оверлей для лучшей видимости контента */
     .overlay {
       background-color: rgba(18, 18, 18, 0.90);
       min-height: 100vh;
@@ -39,7 +37,6 @@
       text-align: center;
     }
     
-    /* Исправлен логотип */
     .logo {
       margin: 0 auto 15px;
       text-align: center;
@@ -128,7 +125,7 @@
     
     .item-title-container {
       margin-bottom: 15px;
-      text-align: center; /* Центрируем заголовок */
+      text-align: center;
     }
     
     .item-title {
@@ -142,28 +139,25 @@
       display: inline-block;
     }
     
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 15px 0;
+    }
+    
     .delivery-info {
       font-size: 14px;
       color: #aaa;
-      margin: 15px 0;
-      text-align: center; /* Центрируем текст */
-    }
-    
-    .price-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    
-    .price-option {
-      font-size: 16px;
-      font-weight: 600;
-      padding: 8px;
+      margin-bottom: 10px;
       text-align: center;
-      border-radius: 4px;
-      background-color: #2a2a2a;
+    }
+    
+    .price {
+      font-size: 24px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 15px;
     }
     
     .description {
@@ -366,10 +360,6 @@
       .info-grid {
         grid-template-columns: 1fr;
       }
-      
-      .price-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
     }
   </style>
 </head>
@@ -377,7 +367,6 @@
   <div class="overlay">
     <header>
       <div class="logo">
-        <!-- Обновленный путь к логотипу -->
         <img src="logo.png" alt="Logo">
       </div>
       <h1 class="main-title">FOOD MENU</h1>
@@ -398,17 +387,13 @@
         <!-- Burger -->
         <div class="menu-item" data-category="burgers">
           <div class="menu-content">
-            <!-- Обновленный путь к изображению -->
             <img src="burger.jpg" alt="Classic Burger" class="item-image">
             <div class="item-title-container">
               <div class="item-title">CLASSIC BURGER</div>
             </div>
-            <div class="delivery-info">Pickup: 400₽</div>
-            <div class="price-grid">
-              <div class="price-option">300₽</div>
-              <div class="price-option">450₽</div>
-              <div class="price-option">600₽</div>
-              <div class="price-option">750₽</div>
+            <div class="item-info">
+              <div class="delivery-info">Pickup: 400₽</div>
+              <div class="price">450₽</div>
             </div>
             <div class="description">
               Juicy beef patty, signature sauce, fresh vegetables and a crispy bun. The perfect combination of ingredients for true burger connoisseurs.
@@ -420,17 +405,13 @@
         <!-- Coffee -->
         <div class="menu-item" data-category="coffee">
           <div class="menu-content">
-            <!-- Обновленный путь к изображению -->
             <img src="burger.jpg" alt="Premium Coffee" class="item-image">
             <div class="item-title-container">
               <div class="item-title">PREMIUM COFFEE</div>
             </div>
-            <div class="delivery-info">Pickup: 300₽</div>
-            <div class="price-grid">
-              <div class="price-option">180₽</div>
-              <div class="price-option">250₽</div>
-              <div class="price-option">320₽</div>
-              <div class="price-option">400₽</div>
+            <div class="item-info">
+              <div class="delivery-info">Pickup: 300₽</div>
+              <div class="price">250₽</div>
             </div>
             <div class="description">
               Premium arabica, intense flavor, velvety texture and exquisite aftertaste. The perfect choice for true coffee gourmets.
@@ -442,17 +423,13 @@
         <!-- Pasta -->
         <div class="menu-item" data-category="pasta">
           <div class="menu-content">
-            <!-- Обновленный путь к изображению -->
             <img src="burger.jpg" alt="Italian Pasta" class="item-image">
             <div class="item-title-container">
               <div class="item-title">ITALIAN PASTA</div>
             </div>
-            <div class="delivery-info">Pickup: 500₽</div>
-            <div class="price-grid">
-              <div class="price-option">350₽</div>
-              <div class="price-option">480₽</div>
-              <div class="price-option">650₽</div>
-              <div class="price-option">800₽</div>
+            <div class="item-info">
+              <div class="delivery-info">Pickup: 500₽</div>
+              <div class="price">480₽</div>
             </div>
             <div class="description">
               Traditional pasta with aromatic sauce, fresh herbs and parmesan. The real taste of Italy in every portion of our signature pasta.
@@ -464,17 +441,13 @@
         <!-- Soup -->
         <div class="menu-item" data-category="soup">
           <div class="menu-content">
-            <!-- Обновленный путь к изображению -->
             <img src="burger.jpg" alt="Creamy Soup" class="item-image">
             <div class="item-title-container">
               <div class="item-title">CREAMY SOUP</div>
             </div>
-            <div class="delivery-info">Pickup: 350₽</div>
-            <div class="price-grid">
-              <div class="price-option">250₽</div>
-              <div class="price-option">350₽</div>
-              <div class="price-option">450₽</div>
-              <div class="price-option">550₽</div>
+            <div class="item-info">
+              <div class="delivery-info">Pickup: 350₽</div>
+              <div class="price">350₽</div>
             </div>
             <div class="description">
               Creamy soup with tender pieces of chicken, fresh vegetables and crispy croutons. Warms and nourishes in any weather.
@@ -486,17 +459,13 @@
         <!-- Pizza -->
         <div class="menu-item" data-category="pizza">
           <div class="menu-content">
-            <!-- Обновленный путь к изображению -->
             <img src="burger.jpg" alt="Supreme Pizza" class="item-image">
             <div class="item-title-container">
               <div class="item-title">SUPREME PIZZA</div>
             </div>
-            <div class="delivery-info">Pickup: 600₽</div>
-            <div class="price-grid">
-              <div class="price-option">450₽</div>
-              <div class="price-option">650₽</div>
-              <div class="price-option">850₽</div>
-              <div class="price-option">1050₽</div>
+            <div class="item-info">
+              <div class="delivery-info">Pickup: 600₽</div>
+              <div class="price">650₽</div>
             </div>
             <div class="description">
               Thin crust, signature tomato sauce, four cheese mix and Italian herbs. The taste of real pizza in every slice.
@@ -508,17 +477,13 @@
         <!-- Dessert -->
         <div class="menu-item" data-category="dessert">
           <div class="menu-content">
-            <!-- Обновленный путь к изображению -->
             <img src="burger.jpg" alt="Cheesecake" class="item-image">
             <div class="item-title-container">
               <div class="item-title">CHEESECAKE</div>
             </div>
-            <div class="delivery-info">Pickup: 350₽</div>
-            <div class="price-grid">
-              <div class="price-option">220₽</div>
-              <div class="price-option">320₽</div>
-              <div class="price-option">420₽</div>
-              <div class="price-option">520₽</div>
+            <div class="item-info">
+              <div class="delivery-info">Pickup: 350₽</div>
+              <div class="price">320₽</div>
             </div>
             <div class="description">
               Delicate creamy cheesecake with a crispy base, fresh berries and vanilla sauce. The perfect ending to your lunch or dinner.
@@ -534,7 +499,6 @@
         <h2 class="section-title">Find Us</h2>
         
         <div class="map-container">
-          <!-- Обновленный путь к карте -->
           <img src="burger.jpg" alt="Location map" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         
@@ -563,7 +527,6 @@
     <footer>
       <div class="container">
         <div class="footer-logo">
-          <!-- Обновленный путь к логотипу в футере -->
           <img src="logo.png" alt="Logo">
         </div>
         
@@ -601,14 +564,8 @@
           </div>
           
           <div class="form-group">
-            <label class="form-label">Portion size</label>
-            <select class="form-select" required>
-              <option value="">Select size</option>
-              <option value="small">Small</option>
-              <option value="medium">Medium</option>
-              <option value="large">Large</option>
-              <option value="xl">Extra Large</option>
-            </select>
+            <label class="form-label">Quantity</label>
+            <input type="number" min="1" value="1" class="form-input" required>
           </div>
           
           <div class="form-group">

@@ -84,6 +84,35 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            display: none; /* Скрываем обычный заголовок */
+        }
+        
+        /* ASCII-арт стиль для заголовка */
+        .ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            line-height: 1.2;
+            font-size: 6px;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 0 auto 15px;
+            text-shadow: 0 0 2px rgba(36, 129, 204, 0.3);
+            transform: scale(1.5);
+            transform-origin: center;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        @media (min-width: 400px) {
+            .ascii-art {
+                font-size: 8px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .ascii-art {
+                font-size: 10px;
+            }
         }
 
         .header p {
@@ -520,6 +549,17 @@
     <div class="container">
         <div class="header">
             <h1>Арт-Генератор</h1>
+            <!-- ASCII-арт заголовок -->
+            <div class="ascii-art">
+ /$$$  /$$$$  /$$$$       /$$$  /$$$$ /$   /$ /$$$$ /$$$$   /$$$  /$$$$ /$$$  /$$$$  
+|_  $_/ | $__  $|__  $__/      /$__  $| $_____/| $$ | $| $_____/| $__  $ /$__  $|__  $__//$__  $| $__  $ 
+  | $   | $  \ $   | $        | $  \__/| $      | $$| $| $      | $  \ $| $  \ $   | $  | $  \ $| $  \ $ 
+  | $   | $$$$/   | $        | $ /$$| $$$   | $ $ $| $$$   | $$$$/| $$$$   | $  | $  | $| $$$$/ 
+  | $   | $__  $   | $        | $|_  $| $__/   | $  $$| $__/   | $__  $| $__  $   | $  | $  | $| $__  $ 
+  | $   | $  \ $   | $        | $  \ $| $      | $\  $$| $      | $  \ $| $  | $   | $  | $  | $| $  \ $ 
+ /$$$\| $  | $   | $        |  $$$/| $$$$| $ \  $| $$$$| $  | $| $  | $   | $  |  $$$/| $  | $ 
+|______/|__/  |__/   |__/         \______/ |________/|__/  \__/|________/|__/  |__/|__/  |__/   |__/   \______/ |__/  |__/ 
+            </div>
             <p>Опишите детально то, что вы хотите увидеть</p>
         </div>
 
@@ -760,7 +800,7 @@
                         // Пытаемся получить сгенерированное изображение
                         // Получаем ID пользователя из Telegram WebApp API
                         const userId = tg.initDataUnsafe.user.id;
-                        const imageUrl = `http://localhost:8080/api/image/${userId}`;
+                        const imageUrl = `${window.location.origin}/api/image/${userId}`;
                         
                         // Периодически проверяем, появилось ли изображение
                         const imageExists = await checkImageExists(imageUrl);

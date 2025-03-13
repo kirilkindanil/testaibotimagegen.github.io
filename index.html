@@ -2,850 +2,463 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRADNI Demo</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Comic+Sans+MS&family=Helvetica+Neue:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        /* Переменные для всех тем */
+        /* Переменные цветов для разных тем */
         :root {
-            /* Золотая тема */
-            --gold-bg-primary: #000000;
-            --gold-bg-secondary: #1A1A1A;
-            --gold-color-primary: #D4AF37;
-            --gold-color-secondary: #9E7E38;
-            --gold-card-bg: #111111;
+            --gold-primary: #D4AF37;
+            --gold-secondary: #A67C00;
+            --gold-bg: #000000;
+            --gold-card: #111111;
             
-            /* Розовая тема */
-            --pink-bg-primary: #FFB6C1;
-            --pink-bg-secondary: #FF69B4;
-            --pink-color-primary: #FF1493;
-            --pink-color-secondary: #FF69B4;
-            --pink-card-bg: #FFF0F5;
+            --pink-primary: #FF1493;
+            --pink-secondary: #FF69B4;
+            --pink-bg: #FFF0F5;
+            --pink-card: #FFDBF0;
             
-            /* Голубая тема */
-            --blue-bg-primary: #2E86C1;
-            --blue-bg-secondary: #5DADE2;
-            --blue-color-primary: #2E86C1;
-            --blue-color-secondary: #7FB3D5;
-            --blue-card-bg: #FFFFFF;
+            --blue-primary: #2E86C1;
+            --blue-secondary: #5DADE2;
+            --blue-bg: #F8F9F9;
+            --blue-card: #FFFFFF;
         }
         
-        /* Общие стили для всех тем */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            min-height: 100vh;
-            position: relative;
-            transition: background 0.8s ease, color 0.8s ease;
-        }
-        
-        .container {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
             max-width: 500px;
             margin: 0 auto;
-            padding: 20px;
+            transition: background 0.5s ease, color 0.5s ease;
         }
         
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 20px;
+        .header {
             text-align: center;
-            transition: all 0.8s ease;
-        }
-        
-        .app-title {
-            transition: all 0.8s ease;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
         }
         
         .profile-card {
-            margin-bottom: 20px;
-            position: relative;
+            border-radius: 10px;
             overflow: hidden;
-            transition: all 0.8s ease;
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
         }
         
         .photo-container {
             position: relative;
             width: 100%;
-            aspect-ratio: 1;
-            overflow: hidden;
-            transition: all 0.8s ease;
+            padding-bottom: 100%; /* соотношение сторон 1:1 */
         }
         
         .profile-photo {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: all 0.3s ease;
         }
         
         .profile-info {
             padding: 20px;
-            position: relative;
-            transition: all 0.8s ease;
+            transition: all 0.5s ease;
         }
         
-        .profile-name, .profile-age {
-            transition: all 0.8s ease;
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            transition: all 0.5s ease;
         }
         
-        .reactions-container {
+        .profile-age {
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: all 0.5s ease;
+        }
+        
+        .reactions {
             display: flex;
-            height: 60px;
-            margin-top: 15px;
-            position: relative;
-            transition: all 0.8s ease;
+            justify-content: space-around;
+            padding: 10px;
+            transition: all 0.5s ease;
+            border-radius: 10px;
         }
         
-        .reaction-divider {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            transition: all 0.8s ease;
-        }
-        
-        .reaction-btn {
-            flex: 1;
+        .reaction {
             display: flex;
-            justify-content: center;
             align-items: center;
-            position: relative;
-            border: none;
-            background: none;
-            font-size: 32px;
             cursor: pointer;
+            padding: 5px 10px;
             transition: transform 0.2s ease;
         }
         
-        .reaction-btn:active {
+        .reaction:active {
             transform: scale(0.95);
         }
         
-        .reaction-count-box {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            height: 25px;
-            min-width: 30px;
-            padding: 0 8px;
-            margin-left: 8px;
+        .reaction-emoji {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .reaction-count {
             font-weight: bold;
-            transition: all 0.8s ease;
+            padding: 2px 8px;
+            border-radius: 15px;
+            transition: all 0.5s ease;
         }
         
-        .loading {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 80vh;
-            gap: 20px;
-            transition: all 0.8s ease;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite;
-            transition: all 0.8s ease;
-        }
-        
-        .bottom-spacer {
-            height: 40px;
-        }
-        
-        /* Индикатор темы */
-        .theme-indicator {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 12px;
-            border-radius: 6px;
+        .navigation {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 2px;
-            transition: all 0.8s ease;
+            margin: 20px 0;
+        }
+        
+        .nav-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-indicator {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
         }
         
         .theme-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            transition: all 0.8s ease;
+            margin: 0 5px;
             opacity: 0.3;
+            transition: all 0.3s ease;
         }
         
         .theme-dot.active {
             opacity: 1;
         }
         
-        .photo-slider {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            transition: all 0.8s ease;
-        }
-        
-        .slider-track {
-            width: 60px;
-            height: 4px;
-            border-radius: 2px;
-            position: relative;
-            transition: all 0.8s ease;
-        }
-        
-        .slider-thumb {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 20px;
-            height: 4px;
-            border-radius: 2px;
-            transition: left 0.3s ease, background-color 0.8s ease;
-        }
-        
-        /* Золотая тема */
+        /* Стили для золотой темы */
         .theme-gold {
-            background: linear-gradient(to bottom, var(--gold-bg-primary), var(--gold-bg-secondary));
-            color: var(--gold-color-primary);
+            background-color: var(--gold-bg);
+            color: var(--gold-primary);
         }
         
-        .theme-gold::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 20px,
-                rgba(212, 175, 55, 0.03) 20px,
-                rgba(212, 175, 55, 0.03) 22px
-            );
-            z-index: -1;
-        }
-        
-        .theme-gold .app-header {
-            background-color: var(--gold-bg-primary);
-            border-bottom: 2px solid var(--gold-color-primary);
-        }
-        
-        .theme-gold .app-title {
-            font-family: 'Playfair Display', 'Times New Roman', serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--gold-color-primary);
-            letter-spacing: 2px;
-            text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
-            text-transform: uppercase;
+        .theme-gold .header {
+            border-bottom: 2px solid var(--gold-primary);
         }
         
         .theme-gold .profile-card {
-            background-color: var(--gold-card-bg);
-            border: 2px solid var(--gold-color-primary);
-        }
-        
-        .theme-gold .profile-card::before,
-        .theme-gold .profile-card::after,
-        .theme-gold .profile-card-bottom::before,
-        .theme-gold .profile-card-bottom::after {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-color: var(--gold-color-primary);
-            border-style: solid;
-            z-index: 1;
-        }
-        
-        .theme-gold .profile-card::before {
-            top: 0;
-            left: 0;
-            border-width: 2px 0 0 2px;
-        }
-        
-        .theme-gold .profile-card::after {
-            top: 0;
-            right: 0;
-            border-width: 2px 2px 0 0;
-        }
-        
-        .theme-gold .profile-card-bottom::before {
-            bottom: 0;
-            left: 0;
-            border-width: 0 0 2px 2px;
-        }
-        
-        .theme-gold .profile-card-bottom::after {
-            bottom: 0;
-            right: 0;
-            border-width: 0 2px 2px 0;
-        }
-        
-        .theme-gold .photo-container {
-            background-color: var(--gold-bg-primary);
-            border-bottom: 1px solid var(--gold-color-primary);
-        }
-        
-        .theme-gold .photo-frame {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            border: 1px solid var(--gold-color-primary);
-            pointer-events: none;
-            z-index: 2;
-        }
-        
-        .theme-gold .photo-frame::before,
-        .theme-gold .photo-frame::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 1px;
-            background-color: var(--gold-color-primary);
-            opacity: 0.5;
-            transform-origin: center;
-        }
-        
-        .theme-gold .photo-frame::before {
-            top: 50%;
-            transform: rotate(45deg);
-        }
-        
-        .theme-gold .photo-frame::after {
-            top: 50%;
-            transform: rotate(-45deg);
-        }
-        
-        .theme-gold .slider-track {
-            background-color: rgba(212, 175, 55, 0.2);
-        }
-        
-        .theme-gold .slider-thumb {
-            background-color: var(--gold-color-primary);
+            background-color: var(--gold-card);
+            border: 2px solid var(--gold-primary);
         }
         
         .theme-gold .profile-name {
-            font-family: 'Playfair Display', 'Times New Roman', serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--gold-color-primary);
-            text-shadow: 0 0 3px rgba(212, 175, 55, 0.3);
+            color: var(--gold-primary);
         }
         
         .theme-gold .profile-age {
-            font-family: 'Playfair Display', 'Times New Roman', serif;
-            font-size: 18px;
-            color: var(--gold-color-secondary);
+            color: var(--gold-secondary);
         }
         
-        .theme-gold .gold-divider {
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(to right, 
-                transparent, 
-                var(--gold-color-primary) 20%, 
-                var(--gold-color-primary) 80%, 
-                transparent 100%);
-            margin: 15px 0;
-            position: relative;
+        .theme-gold .reactions {
+            background-color: var(--gold-card);
+            border: 1px solid var(--gold-primary);
         }
         
-        .theme-gold .gold-divider::before {
-            content: '•';
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--gold-color-primary);
-            font-size: 12px;
+        .theme-gold .reaction-count {
+            background-color: var(--gold-card);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
         }
         
-        .theme-gold .reactions-container {
-            background-color: var(--gold-card-bg);
-            border: 1px solid var(--gold-color-primary);
-        }
-        
-        .theme-gold .reaction-divider {
-            background-color: var(--gold-color-primary);
-        }
-        
-        .theme-gold .reaction-count-box {
-            background-color: var(--gold-card-bg);
-            border: 1px solid var(--gold-color-primary);
-            border-radius: 4px;
-            color: var(--gold-color-primary);
-            font-family: 'Times New Roman', serif;
-        }
-        
-        .theme-gold .theme-indicator {
-            background-color: #222222;
-            border: 1px solid var(--gold-color-primary);
+        .theme-gold .nav-button {
+            background-color: var(--gold-card);
+            color: var(--gold-primary);
+            border: 1px solid var(--gold-primary);
         }
         
         .theme-gold .theme-dot {
-            background-color: var(--gold-color-primary);
+            background-color: var(--gold-primary);
         }
         
-        .theme-gold .spinner {
-            border: 2px solid rgba(212, 175, 55, 0.1);
-            border-top-color: var(--gold-color-primary);
-        }
-        
-        /* Розовая тема */
+        /* Стили для розовой темы */
         .theme-pink {
-            background: linear-gradient(to bottom, var(--pink-bg-primary), var(--pink-bg-secondary));
-            color: var(--pink-color-primary);
+            background: linear-gradient(to bottom, var(--pink-secondary), var(--pink-bg));
+            color: var(--pink-primary);
         }
         
-        .theme-pink::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><path d="M30,20 Q40,10 50,20 Q60,30 50,40 Q30,60 10,40 Q0,30 10,20 Q20,10 30,20" fill="%23FF69B4" opacity="0.2"/></svg>');
-            background-size: 60px 60px;
-            z-index: -1;
-            opacity: 0.3;
-        }
-        
-        .theme-pink .app-header {
-            background-color: #FFDBF0;
-            border-bottom: 3px solid var(--pink-color-primary);
-        }
-        
-        .theme-pink .app-title {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--pink-color-primary);
-            text-shadow: 0 0 5px rgba(255, 20, 147, 0.3);
+        .theme-pink .header {
+            background-color: var(--pink-card);
+            border-bottom: 2px solid var(--pink-primary);
         }
         
         .theme-pink .profile-card {
-            background-color: var(--pink-card-bg);
+            background-color: var(--pink-card);
             border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
-        }
-        
-        .theme-pink .photo-container {
-            background-color: #FFFFFF;
-            border-radius: 20px 20px 0 0;
-        }
-        
-        .theme-pink .slider-track {
-            background-color: var(--pink-bg-primary);
-        }
-        
-        .theme-pink .slider-thumb {
-            background-color: var(--pink-color-primary);
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
         }
         
         .theme-pink .profile-name {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--pink-color-primary);
+            color: var(--pink-primary);
         }
         
         .theme-pink .profile-age {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            font-size: 18px;
-            color: var(--pink-color-secondary);
+            color: var(--pink-secondary);
         }
         
-        .theme-pink .reactions-container {
-            background-color: #FFDBF0;
+        .theme-pink .reactions {
+            background-color: var(--pink-card);
             border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(255, 105, 180, 0.2);
         }
         
-        .theme-pink .reaction-divider {
-            background-color: var(--pink-color-secondary);
-            width: 2px;
-            background-image: linear-gradient(to bottom, var(--pink-color-secondary) 50%, transparent 50%);
-            background-size: 2px 8px;
+        .theme-pink .reaction-count {
+            background-color: var(--pink-bg);
+            border: 1px solid var(--pink-secondary);
+            color: var(--pink-primary);
         }
         
-        .theme-pink .reaction-count-box {
-            background-color: #FFDBF0;
-            border: 2px solid var(--pink-color-secondary);
-            border-radius: 12px;
-            color: var(--pink-color-primary);
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-        }
-        
-        .theme-pink .theme-indicator {
-            background-color: #FFDBF0;
-            border: 1px solid var(--pink-color-secondary);
+        .theme-pink .nav-button {
+            background-color: var(--pink-primary);
+            color: white;
         }
         
         .theme-pink .theme-dot {
-            background-color: var(--pink-color-primary);
+            background-color: var(--pink-primary);
         }
         
-        .theme-pink .spinner {
-            border: 2px solid rgba(255, 20, 147, 0.1);
-            border-top-color: var(--pink-color-primary);
-        }
-        
-        /* Голубая тема */
+        /* Стили для голубой темы */
         .theme-blue {
-            background: linear-gradient(to bottom, var(--blue-bg-primary), var(--blue-bg-secondary));
-            color: var(--blue-color-primary);
+            background-color: var(--blue-bg);
+            color: var(--blue-primary);
         }
         
-        .theme-blue .app-header {
-            background-color: var(--blue-bg-primary);
-            box-shadow: 0 2px 10px rgba(46, 134, 193, 0.3);
-        }
-        
-        .theme-blue .app-title {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 28px;
-            font-weight: 300;
-            color: #FFFFFF;
-            letter-spacing: 0.5px;
+        .theme-blue .header {
+            background-color: var(--blue-primary);
+            color: white;
         }
         
         .theme-blue .profile-card {
-            background-color: var(--blue-card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(46, 134, 193, 0.2);
-        }
-        
-        .theme-blue .photo-container {
-            background-color: #F2F6F9;
-            border-radius: 12px 12px 0 0;
-            border-bottom: 1px solid #AED6F1;
-        }
-        
-        .theme-blue .slider-track {
-            background-color: #E5E8E8;
-        }
-        
-        .theme-blue .slider-thumb {
-            background-color: var(--blue-bg-secondary);
+            background-color: var(--blue-card);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .theme-blue .profile-name {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 24px;
-            font-weight: 500;
-            color: var(--blue-color-primary);
+            color: var(--blue-primary);
         }
         
         .theme-blue .profile-age {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            color: var(--blue-color-secondary);
+            color: var(--blue-secondary);
         }
         
-        .theme-blue .reactions-container {
+        .theme-blue .reactions {
             background-color: #F2F6F9;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(46, 134, 193, 0.1);
         }
         
-        .theme-blue .reaction-divider {
-            background-color: #AED6F1;
+        .theme-blue .reaction-count {
+            background-color: var(--blue-bg);
+            border: 1px solid var(--blue-secondary);
+            color: var(--blue-primary);
         }
         
-        .theme-blue .reaction-count-box {
-            background-color: #F2F6F9;
-            border: 1px solid var(--blue-bg-secondary);
-            border-radius: 12px;
-            color: var(--blue-color-primary);
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
-        
-        .theme-blue .theme-indicator {
-            background-color: #E5E8E8;
+        .theme-blue .nav-button {
+            background-color: var(--blue-primary);
+            color: white;
         }
         
         .theme-blue .theme-dot {
-            background-color: var(--blue-bg-secondary);
-        }
-        
-        .theme-blue .spinner {
-            border: 2px solid rgba(46, 134, 193, 0.1);
-            border-top-color: var(--blue-bg-primary);
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            background-color: var(--blue-primary);
         }
         
         /* Анимация смены темы */
         .theme-transition {
-            animation: theme-change 0.8s ease;
+            animation: theme-change 0.5s ease;
         }
         
         @keyframes theme-change {
-            0% { 
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            100% { 
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body class="theme-blue">
-    <header class="app-header">
-        <div class="app-title">GRADNI</div>
-    </header>
-
-    <div class="container" id="app">
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <div class="loading-text">Загрузка профилей...</div>
-        </div>
-        
-        <div id="profileContainer" style="display: none;">
-            <!-- Здесь будет отображаться профиль -->
-        </div>
-        
-        <!-- Индикатор темы -->
-        <div class="theme-indicator">
-            <div class="theme-dot" data-theme="gold"></div>
-            <div class="theme-dot" data-theme="pink"></div>
-            <div class="theme-dot active" data-theme="blue"></div>
-        </div>
-        
-        <!-- Отступ для нижней панели -->
-        <div class="bottom-spacer"></div>
+    <div class="header">
+        <h1>GRADNI</h1>
+    </div>
+    
+    <div id="profile-container">
+        <!-- Профиль будет загружен сюда через JavaScript -->
+    </div>
+    
+    <div class="navigation">
+        <button class="nav-button" onclick="prevProfile()">← Предыдущий</button>
+        <button class="nav-button" onclick="nextProfile()">Следующий →</button>
+    </div>
+    
+    <div class="theme-indicator">
+        <div class="theme-dot" data-theme="gold"></div>
+        <div class="theme-dot" data-theme="pink"></div>
+        <div class="theme-dot active" data-theme="blue"></div>
     </div>
     
     <script>
-        // Определение случайных данных профилей для демонстрации
-        const PROFILES = [
+        // Упрощенный набор профилей для демо
+        const profiles = [
             {
-                id: 1,
                 name: "Александр",
                 age: 26,
-                photos: [
-                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww",
-                    "https://images.unsplash.com/photo-1611485988300-b7ef6c1766e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww"
-                ],
+                photo: "https://randomuser.me/api/portraits/men/1.jpg",
                 reactions: { "😍": 24, "🤮": 18 }
             },
             {
-                id: 2,
                 name: "Елена",
                 age: 23,
-                photos: [
-                    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1471898554234-bcbfedd35134?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
+                photo: "https://randomuser.me/api/portraits/women/2.jpg",
                 reactions: { "😍": 156, "🤮": 42 }
             },
             {
-                id: 3,
                 name: "Михаил",
                 age: 29,
-                photos: [
-                    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww",
-                    "https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww"
-                ],
+                photo: "https://randomuser.me/api/portraits/men/3.jpg",
                 reactions: { "😍": 34, "🤮": 128 }
             },
             {
-                id: 4,
                 name: "Анна",
                 age: 24,
-                photos: [
-                    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D"
-                ],
+                photo: "https://randomuser.me/api/portraits/women/4.jpg",
                 reactions: { "😍": 87, "🤮": 46 }
             },
             {
-                id: 5,
                 name: "Дмитрий",
                 age: 31,
-                photos: [
-                    "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww",
-                    "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
+                photo: "https://randomuser.me/api/portraits/men/5.jpg",
                 reactions: { "😍": 42, "🤮": 175 }
-            },
-            {
-                id: 6,
-                name: "Екатерина",
-                age: 27,
-                photos: [
-                    "https://images.unsplash.com/photo-1564564244660-5d73c057f2d2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D",
-                    "https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D"
-                ],
-                reactions: { "😍": 126, "🤮": 39 }
-            },
-            {
-                id: 7,
-                name: "Артём",
-                age: 25,
-                photos: [
-                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww",
-                    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
-                reactions: { "😍": 95, "🤮": 87 }
-            },
-            {
-                id: 8,
-                name: "Ольга",
-                age: 22,
-                photos: [
-                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D",
-                    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D"
-                ],
-                reactions: { "😍": 15, "🤮": 9 }
-            },
-            {
-                id: 9,
-                name: "Сергей",
-                age: 28,
-                photos: [
-                    "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8bWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1545167622-3a6ac756afa4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww"
-                ],
-                reactions: { "😍": 120, "🤮": 145 }
-            },
-            {
-                id: 10,
-                name: "Мария",
-                age: 25,
-                photos: [
-                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D",
-                    "https://images.unsplash.com/photo-1557555187-23d685287bc3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
-                reactions: { "😍": 178, "🤮": 28 }
-            },
-            {
-                id: 11,
-                name: "Антон",
-                age: 30,
-                photos: [
-                    "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww",
-                    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww"
-                ],
-                reactions: { "😍": 55, "🤮": 41 }
-            },
-            {
-                id: 12,
-                name: "Татьяна",
-                age: 26,
-                photos: [
-                    "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D"
-                ],
-                reactions: { "😍": 83, "🤮": 29 }
-            },
-            {
-                id: 13,
-                name: "Владимир",
-                age: 32,
-                photos: [
-                    "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww",
-                    "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
-                reactions: { "😍": 36, "🤮": 112 }
-            },
-            {
-                id: 14,
-                name: "Алина",
-                age: 23,
-                photos: [
-                    "https://images.unsplash.com/photo-1499651681375-8afc5a4db253?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1560535733-540e0b9a4b59?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
-                reactions: { "😍": 142, "🤮": 17 }
-            },
-            {
-                id: 15,
-                name: "Игорь",
-                age: 29,
-                photos: [
-                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
-                reactions: { "😍": 61, "🤮": 48 }
-            },
-            {
-                id: 16,
-                name: "Ксения",
-                age: 24,
-                photos: [
-                    "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1479936343636-73cdc5aae0c3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
-                reactions: { "😍": 18, "🤮": 7 }
-            },
-            {
-                id: 17,
-                name: "Роман",
-                age: 27,
-                photos: [
-                    "https://images.unsplash.com/photo-1463453091185-61582044d556?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww"
-                ],
-                reactions: { "😍": 103, "🤮": 167 }
-            },
-            {
-                id: 18,
-                name: "Виктория",
-                age: 25,
-                photos: [
-                    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D",
-                    "https://images.unsplash.com/photo-1551292831-023188e78222?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                ],
-                reactions: { "😍": 125, "🤮": 56 }
-            },
-            {
-                id: 19,
-                name: "Никита",
-                age: 26,
-                photos: [
-                    "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww",
-                    "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fG1hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww"
-                ],
-                reactions: { "😍": 47, "🤮": 35 }
-            },
-            {
-                id: 20,
-                name: "Ирина",
-                age: 28,
-                photos: [
-                    "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D",
-                    "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHwwfHx8MA%3D%3D"
-                ],
-                reactions: { "😍": 98, "🤮": 121 }
             }
         ];
+        
+        let currentProfileIndex = 0;
+        
+        // Функция для определения темы на основе реакций
+        function determineTheme(profile) {
+            const loveReactions = profile.reactions["😍"] || 0;
+            const disgustReactions = profile.reactions["🤮"] || 0;
+            
+            if (disgustReactions >= 100) {
+                return "gold";
+            } else if (loveReactions >= 100) {
+                return "pink";
+            } else {
+                return "blue";
+            }
+        }
+        
+        // Функция для применения темы
+        function applyTheme(theme) {
+            document.body.className = `theme-${theme} theme-transition`;
+            
+            // Обновляем индикатор темы
+            document.querySelectorAll('.theme-dot').forEach(dot => {
+                dot.classList.remove('active');
+                if (dot.dataset.theme === theme) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+        
+        // Функция для отображения профиля
+        function renderProfile(profile) {
+            const container = document.getElementById('profile-container');
+            
+            container.innerHTML = `
+                <div class="profile-card">
+                    <div class="photo-container">
+                        <img src="${profile.photo}" alt="${profile.name}" class="profile-photo">
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name">${profile.name}</div>
+                        <div class="profile-age">${profile.age} лет</div>
+                        
+                        <div class="reactions">
+                            <div class="reaction" onclick="addReaction('😍')">
+                                <span class="reaction-emoji">😍</span>
+                                <span class="reaction-count">${profile.reactions["😍"] || 0}</span>
+                            </div>
+                            <div class="reaction" onclick="addReaction('🤮')">
+                                <span class="reaction-emoji">🤮</span>
+                                <span class="reaction-count">${profile.reactions["🤮"] || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Функция для отображения текущего профиля
+        function displayCurrentProfile() {
+            const profile = profiles[currentProfileIndex];
+            
+            // Применяем тему на основе реакций
+            const theme = determineTheme(profile);
+            applyTheme(theme);
+            
+            // Отображаем профиль
+            renderProfile(profile);
+        }
+        
+        // Функция для перехода к следующему профилю
+        function nextProfile() {
+            currentProfileIndex = (currentProfileIndex + 1) % profiles.length;
+            displayCurrentProfile();
+        }
+        
+        // Функция для перехода к предыдущему профилю
+        function prevProfile() {
+            currentProfileIndex = (currentProfileIndex - 1 + profiles.length) % profiles.length;
+            displayCurrentProfile();
+        }
+        
+        // Функция для добавления реакции
+        function addReaction(type) {
+            const profile = profiles[currentProfileIndex];
+            
+            // Увеличиваем счетчик реакций
+            profile.reactions[type] = (profile.reactions[type] || 0) + 1;
+            
+            // Обновляем отображение
+            const oldTheme = determineTheme(profile);
+            renderProfile(profile);
+            
+            // Проверяем, нужно ли сменить тему
+            const newTheme = determineTheme(profile);
+            if (oldTheme !== newTheme) {
+                applyTheme(newTheme);
+            }
+        }
+        
+        // Обработчики клавиш для навигации
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                prevProfile();
+            } else if (event.key === 'ArrowRight') {
+                nextProfile();
+            }
+        });
+        
+        // Отображаем первый профиль при загрузке страницы
+        window.addEventListener('load', displayCurrentProfile);
+    </script>
+</body>
+</html>

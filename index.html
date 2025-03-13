@@ -5,62 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FOOD MENU</title>
   
-  <!-- Подключение шрифта Sativa -->
+  <!-- Подключаем шрифт через Google Fonts вместо локального Sativa -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  
   <style>
-    @font-face {
-      font-family: 'Sativa';
-      src: url('fonts/Sativa-Regular.woff2') format('woff2'),
-           url('fonts/Sativa-Regular.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-    
-    @font-face {
-      font-family: 'Sativa';
-      src: url('fonts/Sativa-Bold.woff2') format('woff2'),
-           url('fonts/Sativa-Bold.woff') format('woff');
-      font-weight: bold;
-      font-style: normal;
-      font-display: swap;
-    }
-    
-    @font-face {
-      font-family: 'Sativa';
-      src: url('fonts/Sativa-Light.woff2') format('woff2'),
-           url('fonts/Sativa-Light.woff') format('woff');
-      font-weight: 300;
-      font-style: normal;
-      font-display: swap;
-    }
-    
-    @font-face {
-      font-family: 'Sativa';
-      src: url('fonts/Sativa-Medium.woff2') format('woff2'),
-           url('fonts/Sativa-Medium.woff') format('woff');
-      font-weight: 500;
-      font-style: normal;
-      font-display: swap;
-    }
-    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Sativa', sans-serif;
+      font-family: 'Montserrat', sans-serif;
     }
     
     body {
       background-color: #121212;
+      /* Делаем фон видимым и правильно позиционированным */
       background-image: url('back.jpeg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
+      background-repeat: no-repeat;
       color: white;
     }
     
+    /* Добавляем более темный оверлей для лучшей видимости контента */
     .overlay {
-      background-color: rgba(18, 18, 18, 0.85);
+      background-color: rgba(18, 18, 18, 0.90);
       min-height: 100vh;
       width: 100%;
     }
@@ -70,19 +39,19 @@
       text-align: center;
     }
     
+    /* Исправлен логотип */
     .logo {
-      width: 80px;
-      height: 80px;
       margin: 0 auto 15px;
+      text-align: center;
     }
     
     .logo img {
-      width: 100%;
-      height: 100%;
+      max-width: 180px;
+      height: auto;
+      display: inline-block;
     }
     
     .main-title {
-      font-family: 'Sativa', sans-serif;
       font-size: 42px;
       font-weight: 800;
       letter-spacing: 3px;
@@ -113,8 +82,6 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-family: 'Sativa', sans-serif;
-      font-weight: 500;
     }
     
     .category-btn:hover {
@@ -161,6 +128,7 @@
     
     .item-title-container {
       margin-bottom: 15px;
+      text-align: center; /* Центрируем заголовок */
     }
     
     .item-title {
@@ -172,16 +140,13 @@
       padding: 8px 30px;
       border-radius: 4px;
       display: inline-block;
-      font-family: 'Sativa', sans-serif;
-      font-weight: bold;
     }
     
     .delivery-info {
       font-size: 14px;
       color: #aaa;
       margin: 15px 0;
-      font-family: 'Sativa', sans-serif;
-      font-weight: 300;
+      text-align: center; /* Центрируем текст */
     }
     
     .price-grid {
@@ -199,8 +164,6 @@
       text-align: center;
       border-radius: 4px;
       background-color: #2a2a2a;
-      font-family: 'Sativa', sans-serif;
-      font-weight: 500;
     }
     
     .description {
@@ -208,8 +171,6 @@
       color: #aaa;
       text-align: center;
       line-height: 1.4;
-      font-family: 'Sativa', sans-serif;
-      font-weight: normal;
     }
     
     .order-btn {
@@ -222,8 +183,6 @@
       font-weight: 700;
       cursor: pointer;
       transition: transform 0.3s ease;
-      font-family: 'Sativa', sans-serif;
-      font-weight: bold;
     }
     
     .order-btn:hover {
@@ -242,8 +201,6 @@
       text-transform: uppercase;
       margin-bottom: 40px;
       text-align: center;
-      font-family: 'Sativa', sans-serif;
-      font-weight: bold;
     }
     
     .map-container {
@@ -278,15 +235,11 @@
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 10px;
-      font-family: 'Sativa', sans-serif;
-      font-weight: bold;
     }
     
     .info-text {
       color: #aaa;
       line-height: 1.4;
-      font-family: 'Sativa', sans-serif;
-      font-weight: normal;
     }
     
     footer {
@@ -297,22 +250,20 @@
     }
     
     .footer-logo {
-      width: 60px;
-      height: 60px;
       margin: 0 auto 20px;
+      text-align: center;
     }
     
     .footer-logo img {
-      width: 100%;
-      height: 100%;
+      max-width: 120px;
+      height: auto;
+      display: inline-block;
     }
     
     .copyright {
       color: #666;
       margin-top: 20px;
       font-size: 14px;
-      font-family: 'Sativa', sans-serif;
-      font-weight: 300;
     }
     
     /* Modal window */
@@ -342,8 +293,6 @@
       font-weight: 700;
       margin-bottom: 20px;
       color: #9AFF2B;
-      font-family: 'Sativa', sans-serif;
-      font-weight: bold;
     }
     
     .form-group {
@@ -354,8 +303,6 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
-      font-family: 'Sativa', sans-serif;
-      font-weight: 500;
     }
     
     .form-input {
@@ -365,8 +312,6 @@
       border: 1px solid #333;
       background-color: #2a2a2a;
       color: white;
-      font-family: 'Sativa', sans-serif;
-      font-weight: normal;
     }
     
     .form-input:focus {
@@ -381,8 +326,6 @@
       border: 1px solid #333;
       background-color: #2a2a2a;
       color: white;
-      font-family: 'Sativa', sans-serif;
-      font-weight: normal;
     }
     
     .modal-buttons {
@@ -398,8 +341,6 @@
       padding: 10px 20px;
       border-radius: 4px;
       cursor: pointer;
-      font-family: 'Sativa', sans-serif;
-      font-weight: 500;
     }
     
     .modal-submit {
@@ -410,8 +351,6 @@
       border-radius: 4px;
       font-weight: 700;
       cursor: pointer;
-      font-family: 'Sativa', sans-serif;
-      font-weight: bold;
     }
     
     /* Mobile version */
@@ -438,7 +377,8 @@
   <div class="overlay">
     <header>
       <div class="logo">
-        <img src="logo.png" alt="Logo">
+        <!-- Логотип с правильными размерами -->
+        <img src="images/logo.png" alt="Logo">
       </div>
       <h1 class="main-title">FOOD MENU</h1>
     </header>
@@ -458,7 +398,7 @@
         <!-- Burger -->
         <div class="menu-item" data-category="burgers">
           <div class="menu-content">
-            <img src="images/burger.jpg" alt="Classic Burger" class="item-image">
+            <img src="burger.jpg" alt="Classic Burger" class="item-image">
             <div class="item-title-container">
               <div class="item-title">CLASSIC BURGER</div>
             </div>
@@ -617,7 +557,7 @@
     <footer>
       <div class="container">
         <div class="footer-logo">
-          <img src="images/logo.png" alt="Logo">
+          <img src="logo.png" alt="Logo">
         </div>
         
         <div class="copyright">© 2025 FOOD MENU. All rights reserved.</div>

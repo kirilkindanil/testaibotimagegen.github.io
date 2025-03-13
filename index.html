@@ -9,14 +9,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   
   <style>
+    /* Подключение шрифта Druke Wide Cyr */
     @font-face {
       font-family: 'Druke Wide Cyr';
-      src: url('font/DrukCyr-Bold.woff2') format('woff2'),
-           url('font/DrukCyr-Bold.woff') format('woff');
+      src: url('font/DrukWideCyr-Bold.woff2') format('woff2'),
+           url('font/DrukWideCyr-Bold.woff') format('woff');
       font-weight: bold;
       font-style: normal;
       font-display: swap;
     }
+    
     * {
       margin: 0;
       padding: 0;
@@ -40,8 +42,9 @@
       width: 100%;
     }
     
+    /* Обновленные стили для заголовка */
     header {
-      padding: 40px 20px;
+      padding: 30px 20px 10px;
       text-align: center;
     }
     
@@ -56,43 +59,22 @@
       display: inline-block;
     }
     
-    .main-title {
-      font-family: 'Druke Wide Cyr', 'Druk Wide', 'Impact', sans-serif;
-      font-size: 60px;
-      font-weight: 800;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-bottom: 40px;
-      color: #9AFF2B; /* Яркий зеленый цвет */
-      text-shadow: 
-        0 0 15px rgba(154, 255, 43, 0.5), /* Зеленое свечение */
-        0 0 30px rgba(154, 255, 43, 0.3);
-      position: relative;
-      z-index: 2;
-    }
-
-    .main-title::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' fill='%239AFF2B' opacity='0.05'/%3E%3C/svg%3E");
-      opacity: 0.2;
-      z-index: -1;
-      pointer-events: none;
+    .title-container {
+      margin: 15px auto 40px;
+      text-align: center;
     }
     
-    /* Эффект тени для лучшей читаемости */
-    .main-title::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      z-index: -2;
-      color: rgba(0, 0, 0, 0.3);
-      filter: blur(3px);
+    .title-image {
+      max-width: 70%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    /* Добавлен контейнер для категорий */
+    .categories-container {
+      margin-top: 30px;
+      margin-bottom: 40px;
     }
     
     .container {
@@ -128,11 +110,6 @@
       background-color: #9AFF2B;
       color: black;
     }
-
-    .categories-container {
-      margin-top: 30px;
-      margin-bottom: 40px;
-    }
     
     .menu-grid {
       display: grid;
@@ -140,15 +117,17 @@
       gap: 30px;
     }
     
+    /* Обновленные стили карточек товаров */
     .menu-item {
-      background-color: rgba(34, 34, 34, 0.9); /* Более темный фон */
+      background-color: rgba(34, 34, 34, 0.9);
       border-radius: 12px;
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-
+    
+    /* Добавляем шумовую текстуру для фона карточки */
     .menu-item::before {
       content: "";
       position: absolute;
@@ -156,12 +135,11 @@
       left: 0;
       width: 100%;
       height: 100%;
-      opacity: 0.05; /* Тонкий эффект шума */
+      opacity: 0.05;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' fill='%23ffffff'/%3E%3C/svg%3E");
       pointer-events: none;
       z-index: 1;
     }
-    
     
     .menu-content {
       padding: 25px;
@@ -172,10 +150,9 @@
       z-index: 2;
     }
     
-    /* Улучшаем эффект наведения */
     .menu-item:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     }
     
     .item-image {
@@ -189,33 +166,6 @@
     .item-title-container {
       margin-bottom: 15px;
       text-align: center;
-    }
-
-    .title-container {
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    
-    .title-image {
-      max-width: 70%; /* Можно уменьшить размер по необходимости */
-      height: auto;
-      display: block;
-      margin: 0 auto;
-    }
-/* Дополнительный фоновый эффект для заголовка */
-    .title-container::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(
-        circle at center,
-        rgba(154, 255, 43, 0.05) 0%,
-        rgba(0, 0, 0, 0) 70%
-      );
-      z-index: -1;
     }
     
     .item-title {
@@ -239,7 +189,7 @@
     
     .description {
       font-size: 14px;
-      color: #bbbbbb; /* Чуть светлее для лучшего контраста */
+      color: #bbbbbb;
       text-align: center;
       line-height: 1.4;
     }
@@ -263,11 +213,11 @@
       background-color: #8DF529;
     }
     
-    /* Корзина в верхнем правом углу */
+    /* Обновленная иконка корзины */
     .cart-icon {
       position: fixed;
-      top: 30px;  /* Смещение вниз от верха */
-      right: 40px;  /* Смещение от правого края */
+      top: 30px;
+      right: 40px;
       background-color: #9AFF2B;
       color: black;
       width: 55px;
@@ -304,7 +254,8 @@
       font-weight: bold;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
-
+    
+    /* Анимация при добавлении товара */
     @keyframes cartPulse {
       0% {
         transform: scale(1);
@@ -335,8 +286,9 @@
       text-align: center;
     }
     
+    /* Обновленные стили для контейнера карты */
     .map-container {
-      height: 400px;  /* Фиксированная высота */
+      height: 400px;
       width: 100%;
       border-radius: 12px;
       overflow: hidden;
@@ -347,10 +299,10 @@
     .map-container img {
       width: 100%;
       height: 100%;
-      object-fit: cover;  /* Это свойство обеспечивает сохранение пропорций изображения */
-      object-position: center;  /* Центрирует изображение */
+      object-fit: cover;
+      object-position: center;
       border-radius: 12px;
-      display: block;  /* Убирает пространство под изображением */
+      display: block;
     }
     
     .info-grid {
@@ -590,14 +542,17 @@
       margin-top: 20px;
     }
     
+    /* Стили для полей формы с центрированным текстом */
     .form-group {
       margin-bottom: 20px;
+      text-align: center;
     }
     
     .form-label {
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
+      text-align: center;
     }
     
     .form-input {
@@ -607,11 +562,31 @@
       border: 1px solid #333;
       background-color: #2a2a2a;
       color: white;
+      text-align: center;
+      font-size: 16px;
     }
     
     .form-input:focus {
       outline: none;
       border-color: #9AFF2B;
+    }
+    
+    .form-input::placeholder {
+      text-align: center;
+      color: #777;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background-color: #2a2a2a;
+      color: white;
+      text-align: center;
+      text-align-last: center;
+      font-size: 16px;
+      appearance: none;
     }
     
     .pickup-options {
@@ -681,13 +656,16 @@
 </head>
 <body>
   <div class="overlay">
+    <!-- Обновленная структура верхней части -->
     <header>
       <div class="logo">
         <img src="logo.png" alt="Logo">
       </div>
-      <div class="title-container">
-        <img src="fodmen.png" alt="FOOD MENU" class="title-image">
-      </div>
+    </header>
+    
+    <div class="title-container">
+      <img src="fodmen.png" alt="FOOD MENU" class="title-image">
+    </div>
     
     <!-- Иконка корзины -->
     <div class="cart-icon" id="cartIcon">
@@ -695,7 +673,7 @@
       <div class="cart-count" id="cartCount">0</div>
     </div>
     
-    <div class="container">
+    <div class="categories-container">
       <div class="categories">
         <button class="category-btn active" data-category="all">All</button>
         <button class="category-btn" data-category="burgers">Burgers</button>
@@ -705,7 +683,9 @@
         <button class="category-btn" data-category="pizza">Pizza</button>
         <button class="category-btn" data-category="dessert">Desserts</button>
       </div>
-      
+    </div>
+    
+    <div class="container">
       <div class="menu-grid">
         <!-- Burger -->
         <div class="menu-item" data-category="burgers" data-id="burger" data-price="450">
@@ -948,7 +928,6 @@
           cartItem.className = 'cart-item';
           cartItem.innerHTML = `
             <div class="cart-item-info">
-            <div class="cart-item-info">
               <div>
                 <div class="cart-item-name">${item.name}</div>
                 <div class="cart-item-price">${item.price}₽</div>
@@ -1020,6 +999,15 @@
         updateCartCount();
         updateCartItems();
         updateTotal();
+        
+        // Добавляем анимацию к иконке корзины
+        const cartIcon = document.getElementById('cartIcon');
+        cartIcon.classList.remove('cart-pulse'); // Удаляем класс, если он уже был
+        
+        // Небольшая хитрость для перезапуска анимации
+        void cartIcon.offsetWidth; // Этот трюк заставляет браузер перерисовать элемент
+        
+        cartIcon.classList.add('cart-pulse'); // Добавляем класс анимации
       }
       
       // Уменьшение количества товара
@@ -1091,6 +1079,11 @@
       // Обработчик закрытия корзины
       closeCartBtn.addEventListener('click', closeCart);
       
+      // Удаляем класс анимации после её завершения
+      cartIcon.addEventListener('animationend', function() {
+        this.classList.remove('cart-pulse');
+      });
+      
       // Закрытие корзины при клике вне её содержимого
       window.addEventListener('click', (e) => {
         if (e.target === cartModal) {
@@ -1159,3 +1152,5 @@
       });
     });
   </script>
+</body>
+</html>

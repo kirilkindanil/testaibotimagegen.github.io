@@ -128,6 +128,11 @@
       background-color: #9AFF2B;
       color: black;
     }
+
+    .categories-container {
+      margin-top: 30px;
+      margin-bottom: 40px;
+    }
     
     .menu-grid {
       display: grid;
@@ -192,7 +197,7 @@
     }
     
     .title-image {
-      max-width: 80%;
+      max-width: 70%; /* Можно уменьшить размер по необходимости */
       height: auto;
       display: block;
       margin: 0 auto;
@@ -261,24 +266,26 @@
     /* Корзина в верхнем правом углу */
     .cart-icon {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 30px;  /* Смещение вниз от верха */
+      right: 40px;  /* Смещение от правого края */
       background-color: #9AFF2B;
       color: black;
-      width: 50px;
-      height: 50px;
+      width: 55px;
+      height: 55px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 26px;
       cursor: pointer;
       z-index: 100;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     
     .cart-icon:hover {
       transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
     
     .cart-count {
@@ -287,14 +294,31 @@
       right: -8px;
       background-color: white;
       color: black;
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 14px;
       font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes cartPulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .cart-pulse {
+      animation: cartPulse 0.5s ease;
     }
     
     .location-section {

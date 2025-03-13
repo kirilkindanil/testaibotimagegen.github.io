@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FOOD MENU</title>
   
-  <!-- Подключаем шрифт через Google Fonts вместо локального Sativa -->
+  <!-- Подключаем шрифт через Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   
   <style>
@@ -139,25 +139,11 @@
       display: inline-block;
     }
     
-    .item-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 15px 0;
-    }
-    
-    .delivery-info {
-      font-size: 14px;
-      color: #aaa;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    
     .price {
-      font-size: 24px;
-      font-weight: 600;
+      font-size: 28px;
+      font-weight: 700;
       color: white;
-      margin-bottom: 15px;
+      margin: 15px 0;
     }
     
     .description {
@@ -181,6 +167,45 @@
     
     .order-btn:hover {
       transform: scale(1.05);
+    }
+    
+    /* Корзина в верхнем правом углу */
+    .cart-icon {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #9AFF2B;
+      color: black;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+    
+    .cart-icon:hover {
+      transform: scale(1.1);
+    }
+    
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: white;
+      color: black;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
     }
     
     .location-section {
@@ -260,9 +285,9 @@
       font-size: 14px;
     }
     
-    /* Modal window */
+    /* Стили модального окна корзины */
     .modal {
-      display: none;
+      display: flex;
       position: fixed;
       top: 0;
       left: 0;
@@ -272,21 +297,174 @@
       z-index: 1000;
       align-items: center;
       justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
     }
     
     .modal-content {
       background-color: #1a1a1a;
       padding: 30px;
       border-radius: 12px;
-      max-width: 500px;
+      max-width: 600px;
       width: 90%;
+      transform: translateY(30px);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+    
+    .modal.active .modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
     }
     
     .modal-title {
       font-size: 24px;
       font-weight: 700;
-      margin-bottom: 20px;
       color: #9AFF2B;
+      margin: 0;
+    }
+    
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 28px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      line-height: 1;
+    }
+    
+    .modal-close-btn:hover {
+      color: white;
+    }
+    
+    /* Стили для содержимого корзины */
+    .cart-items {
+      margin-bottom: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .cart-empty {
+      text-align: center;
+      color: #aaa;
+      padding: 20px;
+    }
+    
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #333;
+    }
+    
+    .cart-item-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .cart-item-name {
+      font-weight: 600;
+    }
+    
+    .cart-item-price {
+      color: #aaa;
+      font-size: 14px;
+    }
+    
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .quantity-btn {
+      background-color: #2a2a2a;
+      color: white;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .quantity-btn:hover {
+      background-color: #333;
+    }
+    
+    .quantity-value {
+      font-weight: 600;
+      min-width: 30px;
+      text-align: center;
+    }
+    
+    .remove-item {
+      background-color: transparent;
+      color: #ff5757;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 20px 0;
+      padding-top: 10px;
+      border-top: 1px solid #333;
+    }
+    
+    .cart-actions {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .clear-cart {
+      background-color: transparent;
+      border: 1px solid #ff5757;
+      color: #ff5757;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .clear-cart:hover {
+      background-color: rgba(255, 87, 87, 0.1);
+    }
+    
+    .checkout-form {
+      margin-top: 20px;
     }
     
     .form-group {
@@ -313,28 +491,39 @@
       border-color: #9AFF2B;
     }
     
-    .form-select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 4px;
-      border: 1px solid #333;
+    .pickup-options {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .pickup-option {
+      flex: 1;
+    }
+    
+    .pickup-radio {
+      display: none;
+    }
+    
+    .pickup-label {
+      display: block;
+      text-align: center;
+      padding: 10px;
       background-color: #2a2a2a;
-      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .pickup-radio:checked + .pickup-label {
+      background-color: #9AFF2B;
+      color: black;
+      font-weight: 600;
     }
     
     .modal-buttons {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       margin-top: 30px;
-    }
-    
-    .modal-close {
-      background-color: transparent;
-      border: 1px solid #666;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
     }
     
     .modal-submit {
@@ -360,6 +549,10 @@
       .info-grid {
         grid-template-columns: 1fr;
       }
+      
+      .pickup-options {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -371,6 +564,12 @@
       </div>
       <h1 class="main-title">FOOD MENU</h1>
     </header>
+    
+    <!-- Иконка корзины -->
+    <div class="cart-icon" id="cartIcon">
+      🛒
+      <div class="cart-count" id="cartCount">0</div>
+    </div>
     
     <div class="container">
       <div class="categories">
@@ -385,110 +584,92 @@
       
       <div class="menu-grid">
         <!-- Burger -->
-        <div class="menu-item" data-category="burgers">
+        <div class="menu-item" data-category="burgers" data-id="burger" data-price="450">
           <div class="menu-content">
             <img src="burger.jpg" alt="Classic Burger" class="item-image">
             <div class="item-title-container">
               <div class="item-title">CLASSIC BURGER</div>
             </div>
-            <div class="item-info">
-              <div class="delivery-info">Pickup: 400₽</div>
-              <div class="price">450₽</div>
-            </div>
+            <div class="price">450₽</div>
             <div class="description">
               Juicy beef patty, signature sauce, fresh vegetables and a crispy bun. The perfect combination of ingredients for true burger connoisseurs.
             </div>
-            <button class="order-btn">Order</button>
+            <button class="order-btn">Add to Cart</button>
           </div>
         </div>
         
         <!-- Coffee -->
-        <div class="menu-item" data-category="coffee">
+        <div class="menu-item" data-category="coffee" data-id="coffee" data-price="250">
           <div class="menu-content">
             <img src="burger.jpg" alt="Premium Coffee" class="item-image">
             <div class="item-title-container">
               <div class="item-title">PREMIUM COFFEE</div>
             </div>
-            <div class="item-info">
-              <div class="delivery-info">Pickup: 300₽</div>
-              <div class="price">250₽</div>
-            </div>
+            <div class="price">250₽</div>
             <div class="description">
               Premium arabica, intense flavor, velvety texture and exquisite aftertaste. The perfect choice for true coffee gourmets.
             </div>
-            <button class="order-btn">Order</button>
+            <button class="order-btn">Add to Cart</button>
           </div>
         </div>
         
         <!-- Pasta -->
-        <div class="menu-item" data-category="pasta">
+        <div class="menu-item" data-category="pasta" data-id="pasta" data-price="480">
           <div class="menu-content">
             <img src="burger.jpg" alt="Italian Pasta" class="item-image">
             <div class="item-title-container">
               <div class="item-title">ITALIAN PASTA</div>
             </div>
-            <div class="item-info">
-              <div class="delivery-info">Pickup: 500₽</div>
-              <div class="price">480₽</div>
-            </div>
+            <div class="price">480₽</div>
             <div class="description">
               Traditional pasta with aromatic sauce, fresh herbs and parmesan. The real taste of Italy in every portion of our signature pasta.
             </div>
-            <button class="order-btn">Order</button>
+            <button class="order-btn">Add to Cart</button>
           </div>
         </div>
         
         <!-- Soup -->
-        <div class="menu-item" data-category="soup">
+        <div class="menu-item" data-category="soup" data-id="soup" data-price="350">
           <div class="menu-content">
             <img src="burger.jpg" alt="Creamy Soup" class="item-image">
             <div class="item-title-container">
               <div class="item-title">CREAMY SOUP</div>
             </div>
-            <div class="item-info">
-              <div class="delivery-info">Pickup: 350₽</div>
-              <div class="price">350₽</div>
-            </div>
+            <div class="price">350₽</div>
             <div class="description">
               Creamy soup with tender pieces of chicken, fresh vegetables and crispy croutons. Warms and nourishes in any weather.
             </div>
-            <button class="order-btn">Order</button>
+            <button class="order-btn">Add to Cart</button>
           </div>
         </div>
         
         <!-- Pizza -->
-        <div class="menu-item" data-category="pizza">
+        <div class="menu-item" data-category="pizza" data-id="pizza" data-price="650">
           <div class="menu-content">
             <img src="burger.jpg" alt="Supreme Pizza" class="item-image">
             <div class="item-title-container">
               <div class="item-title">SUPREME PIZZA</div>
             </div>
-            <div class="item-info">
-              <div class="delivery-info">Pickup: 600₽</div>
-              <div class="price">650₽</div>
-            </div>
+            <div class="price">650₽</div>
             <div class="description">
               Thin crust, signature tomato sauce, four cheese mix and Italian herbs. The taste of real pizza in every slice.
             </div>
-            <button class="order-btn">Order</button>
+            <button class="order-btn">Add to Cart</button>
           </div>
         </div>
         
         <!-- Dessert -->
-        <div class="menu-item" data-category="dessert">
+        <div class="menu-item" data-category="dessert" data-id="cheesecake" data-price="320">
           <div class="menu-content">
             <img src="burger.jpg" alt="Cheesecake" class="item-image">
             <div class="item-title-container">
               <div class="item-title">CHEESECAKE</div>
             </div>
-            <div class="item-info">
-              <div class="delivery-info">Pickup: 350₽</div>
-              <div class="price">320₽</div>
-            </div>
+            <div class="price">320₽</div>
             <div class="description">
               Delicate creamy cheesecake with a crispy base, fresh berries and vanilla sauce. The perfect ending to your lunch or dinner.
             </div>
-            <button class="order-btn">Order</button>
+            <button class="order-btn">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -534,48 +715,59 @@
       </div>
     </footer>
     
-    <!-- Modal window -->
-    <div class="modal" id="orderModal">
+    <!-- Модальное окно корзины -->
+    <div class="modal" id="cartModal">
       <div class="modal-content">
-        <h2 class="modal-title">Place an Order</h2>
+        <div class="modal-header">
+          <h2 class="modal-title">Your Order</h2>
+          <button type="button" class="modal-close-btn" id="closeCartBtn">&times;</button>
+        </div>
         
-        <form id="orderForm">
+        <div class="cart-items" id="cartItems">
+          <!-- Сюда динамически добавляются товары -->
+          <div class="cart-empty">Your cart is empty</div>
+        </div>
+        
+        <div class="cart-total" id="cartTotal">
+          <div>Total:</div>
+          <div>0₽</div>
+        </div>
+        
+        <div class="cart-actions">
+          <button class="clear-cart" id="clearCartBtn">Clear Cart</button>
+        </div>
+        
+        <form id="checkoutForm" class="checkout-form">
           <div class="form-group">
             <label class="form-label">Your name</label>
-            <input type="text" class="form-input" required>
+            <input type="text" name="name" class="form-input" required>
           </div>
           
           <div class="form-group">
             <label class="form-label">Phone</label>
-            <input type="tel" class="form-input" required>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Dish</label>
-            <select class="form-select" required>
-              <option value="">Select dish</option>
-              <option value="burger">Classic Burger</option>
-              <option value="coffee">Premium Coffee</option>
-              <option value="pasta">Italian Pasta</option>
-              <option value="soup">Creamy Soup</option>
-              <option value="pizza">Supreme Pizza</option>
-              <option value="cheesecake">Cheesecake</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Quantity</label>
-            <input type="number" min="1" value="1" class="form-input" required>
+            <input type="tel" name="phone" class="form-input" required>
           </div>
           
           <div class="form-group">
             <label class="form-label">Pickup time</label>
-            <input type="time" class="form-input" required>
+            <div class="pickup-options">
+              <div class="pickup-option">
+                <input type="radio" name="pickup" id="pickup10" value="10" class="pickup-radio" checked>
+                <label for="pickup10" class="pickup-label">10 minutes</label>
+              </div>
+              <div class="pickup-option">
+                <input type="radio" name="pickup" id="pickup15" value="15" class="pickup-radio">
+                <label for="pickup15" class="pickup-label">15 minutes</label>
+              </div>
+              <div class="pickup-option">
+                <input type="radio" name="pickup" id="pickup30" value="30" class="pickup-radio">
+                <label for="pickup30" class="pickup-label">30 minutes</label>
+              </div>
+            </div>
           </div>
           
           <div class="modal-buttons">
-            <button type="button" class="modal-close" id="closeModal">Cancel</button>
-            <button type="submit" class="modal-submit">Order</button>
+            <button type="submit" class="modal-submit" id="orderSubmitBtn">Order</button>
           </div>
         </form>
       </div>
@@ -583,70 +775,255 @@
   </div>
   
   <script>
-    // Modal window functionality
+    // Корзина и логика заказа
     document.addEventListener('DOMContentLoaded', function() {
-      const modal = document.getElementById('orderModal');
-      const closeModal = document.getElementById('closeModal');
-      const orderForm = document.getElementById('orderForm');
-      const itemOrderBtns = document.querySelectorAll('.order-btn');
+      // Элементы UI
+      const cartIcon = document.getElementById('cartIcon');
+      const cartCount = document.getElementById('cartCount');
+      const cartModal = document.getElementById('cartModal');
+      const closeCartBtn = document.getElementById('closeCartBtn');
+      const cartItems = document.getElementById('cartItems');
+      const cartTotal = document.getElementById('cartTotal');
+      const clearCartBtn = document.getElementById('clearCartBtn');
+      const checkoutForm = document.getElementById('checkoutForm');
+      const addButtons = document.querySelectorAll('.order-btn');
       
-      // Open modal when clicking order button on dish
-      itemOrderBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const menuItem = e.target.closest('.menu-item');
-          const itemTitle = menuItem.querySelector('.item-title').textContent;
-          
-          // Pre-select the dish in the form
-          const foodSelect = document.querySelector('.form-select');
-          
-          // Find option containing the dish name text
-          for (let i = 0; i < foodSelect.options.length; i++) {
-            if (foodSelect.options[i].text.includes(itemTitle)) {
-              foodSelect.selectedIndex = i;
-              break;
-            }
+      // Корзина и общая сумма
+      let cart = [];
+      let total = 0;
+      
+      // Функция открытия корзины
+      function openCart() {
+        cartModal.classList.add('active');
+      }
+      
+      // Функция закрытия корзины
+      function closeCart() {
+        cartModal.classList.remove('active');
+      }
+      
+      // Обновление счетчика товаров в корзине
+      function updateCartCount() {
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = count;
+      }
+      
+      // Обновление содержимого корзины
+      function updateCartItems() {
+        // Очищаем текущее содержимое
+        cartItems.innerHTML = '';
+        
+        if (cart.length === 0) {
+          cartItems.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+          return;
+        }
+        
+        // Добавляем каждый товар в корзину
+        cart.forEach(item => {
+          const cartItem = document.createElement('div');
+          cartItem.className = 'cart-item';
+          cartItem.innerHTML = `
+            <div class="cart-item-info">
+            <div class="cart-item-info">
+              <div>
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-price">${item.price}₽</div>
+              </div>
+            </div>
+            <div class="cart-item-controls">
+              <div class="quantity-control">
+                <button class="quantity-btn decrease" data-id="${item.id}">-</button>
+                <span class="quantity-value">${item.quantity}</span>
+                <button class="quantity-btn increase" data-id="${item.id}">+</button>
+              </div>
+              <button class="remove-item" data-id="${item.id}">&times;</button>
+            </div>
+          `;
+          cartItems.appendChild(cartItem);
+        });
+        
+        // Добавляем обработчики для кнопок изменения количества
+        const decreaseButtons = cartItems.querySelectorAll('.decrease');
+        const increaseButtons = cartItems.querySelectorAll('.increase');
+        const removeButtons = cartItems.querySelectorAll('.remove-item');
+        
+        decreaseButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            decreaseQuantity(id);
+          });
+        });
+        
+        increaseButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            increaseQuantity(id);
+          });
+        });
+        
+        removeButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            removeItem(id);
+          });
+        });
+      }
+      
+      // Обновление общей суммы
+      function updateTotal() {
+        total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        cartTotal.innerHTML = `
+          <div>Total:</div>
+          <div>${total}₽</div>
+        `;
+      }
+      
+      // Добавление товара в корзину
+      function addToCart(id, name, price) {
+        const existingItem = cart.find(item => item.id === id);
+        
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({
+            id,
+            name,
+            price,
+            quantity: 1
+          });
+        }
+        
+        updateCartCount();
+        updateCartItems();
+        updateTotal();
+      }
+      
+      // Уменьшение количества товара
+      function decreaseQuantity(id) {
+        const index = cart.findIndex(item => item.id === id);
+        
+        if (index !== -1) {
+          if (cart[index].quantity > 1) {
+            cart[index].quantity -= 1;
+          } else {
+            cart.splice(index, 1);
           }
           
-          modal.style.display = 'flex';
+          updateCartCount();
+          updateCartItems();
+          updateTotal();
+        }
+      }
+      
+      // Увеличение количества товара
+      function increaseQuantity(id) {
+        const item = cart.find(item => item.id === id);
+        
+        if (item) {
+          item.quantity += 1;
+          updateCartCount();
+          updateCartItems();
+          updateTotal();
+        }
+      }
+      
+      // Удаление товара из корзины
+      function removeItem(id) {
+        cart = cart.filter(item => item.id !== id);
+        updateCartCount();
+        updateCartItems();
+        updateTotal();
+      }
+      
+      // Очистка корзины
+      function clearCart() {
+        cart = [];
+        updateCartCount();
+        updateCartItems();
+        updateTotal();
+      }
+      
+      // Обработчик нажатия на кнопку "Добавить в корзину"
+      addButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const item = e.target.closest('.menu-item');
+          const id = item.dataset.id;
+          const name = item.querySelector('.item-title').textContent;
+          const price = parseInt(item.dataset.price);
+          
+          addToCart(id, name, price);
+          
+          // Анимация добавления в корзину
+          btn.textContent = "Added!";
+          setTimeout(() => {
+            btn.textContent = "Add to Cart";
+          }, 1000);
         });
       });
       
-      // Close modal when clicking close button
-      closeModal.addEventListener('click', () => {
-        modal.style.display = 'none';
-      });
+      // Обработчик нажатия на иконку корзины
+      cartIcon.addEventListener('click', openCart);
       
-      // Close modal when clicking outside its content
+      // Обработчик закрытия корзины
+      closeCartBtn.addEventListener('click', closeCart);
+      
+      // Закрытие корзины при клике вне её содержимого
       window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.style.display = 'none';
+        if (e.target === cartModal) {
+          closeCart();
         }
       });
       
-      // Form submission handling
-      orderForm.addEventListener('submit', (e) => {
+      // Обработчик очистки корзины
+      clearCartBtn.addEventListener('click', clearCart);
+      
+      // Обработчик отправки формы заказа
+      checkoutForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        alert('Your order has been successfully placed! We will contact you for confirmation.');
-        modal.style.display = 'none';
+        
+        if (cart.length === 0) {
+          alert('Your cart is empty. Please add some items first.');
+          return;
+        }
+        
+        const formData = new FormData(checkoutForm);
+        const name = formData.get('name');
+        const phone = formData.get('phone');
+        const pickupTime = formData.get('pickup');
+        
+        // Здесь в реальном проекте может быть отправка данных на сервер
+        
+        // Вывод сообщения об успешном заказе
+        alert(`Thank you, ${name}! Your order has been placed. It will be ready for pickup in ${pickupTime} minutes.`);
+        
+        // Очистка корзины и закрытие модального окна
+        clearCart();
+        closeCart();
+        checkoutForm.reset();
       });
+      
+      // Инициализация корзины
+      updateCartCount();
+      updateCartItems();
+      updateTotal();
     });
     
-    // Menu categories functionality
+    // Фильтрация по категориям меню
     document.addEventListener('DOMContentLoaded', function() {
       const categoryBtns = document.querySelectorAll('.category-btn');
       const menuItems = document.querySelectorAll('.menu-item');
       
       categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-          // Remove active class from all buttons
+          // Убрать активный класс у всех кнопок
           categoryBtns.forEach(b => b.classList.remove('active'));
           
-          // Add active class to clicked button
+          // Добавить активный класс к нажатой кнопке
           btn.classList.add('active');
           
           const category = btn.dataset.category;
           
-          // Show all or only selected category
+          // Показать все или только выбранной категории
           menuItems.forEach(item => {
             if (category === 'all' || item.dataset.category === category) {
               item.style.display = 'block';
@@ -658,5 +1035,3 @@
       });
     });
   </script>
-</body>
-</html>
